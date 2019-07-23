@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+                android:id="@+id/nav_home"
+                android:title="@string/menu_home"/>
+
+        <item android:title="@string/menu_adventures">
+
+            <menu>
+                <item android:id="@+id/nav_bucket_lists"
+                      android:title="@string/menu_bucket_lists"/>
+
+                <item android:id="@+id/nav_suggest_challenge"
+                      android:title="@string/menu_suggest_challenge"/>
+
+                <item android:id="@+id/nav_my_bucket_list"
+                      android:title="@string/menu_my_bucket_list"/>
+            </menu>
+
+        </item>
+
+        <item android:title="@string/menu_adventurer">
+
+            <menu>
+                <item android:id="@+id/nav_progress"
+                      android:title="@string/menu_progress"/>
+
+                <item android:id="@+id/nav_comrades"
+                      android:title="@string/menu_comrades"/>
+
+                <item android:id="@+id/nav_login"
+                      android:title="@string/menu_login"/>
+            </menu>
+
+        </item>
+
+    </group>
+</menu>
