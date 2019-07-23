@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">KickIT</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_bucket_lists">Bucket Lists</string>
+    <string name="menu_suggest_challenge">Suggest A Challenge</string>
+    <string name="menu_my_bucket_list">My Bucket List</string>
+    <string name="menu_progress">Progress</string>
+    <string name="menu_login">Login</string>
+    <string name="menu_comrades">Comrades</string>
+    <string name="menu_adventures">Adventures</string>
+    <string name="menu_adventurer">Adventurer</string>
+</resources>
