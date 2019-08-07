@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <size android:width="@dimen/fab_margin" android:height="@dimen/fab_margin"/>
+
+    <gradient android:startColor="@color/gradientTo" android:endColor="@color/gradientFrom" android:centerColor="@color/gradientFrom" android:angle="225"/>
+
+    <corners android:radius="@dimen/fab_margin"/>
+
+</shape>
