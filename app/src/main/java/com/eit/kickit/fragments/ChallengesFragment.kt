@@ -1,47 +1,48 @@
 package com.eit.kickit.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eit.kickit.Adapters.BucketLists_Adapter
-
 import com.eit.kickit.R
 import kotlinx.android.synthetic.main.fragment_bucket_lists.*
+import kotlinx.android.synthetic.main.fragment_challenges.*
 
 /**
- * Sets up the recycler view for the layout.
- * The layout connected to this fragment displays all the bucket lists in the application.
- * Selected a bucket list will take the user to a new layout with all the challenges of that bucket list
+ * Sets up the recycler view for the layout
+ * This fragment is connected to a single bucket list.
+ * Diplays the challenges of that bucket list
  *
- * TO DO: Set on click of bucket lists to take to challanges layout(and initialise challenge frag)
+ * TO DO: When selecting a challenge open view challenge layout
+ *
+ *
+ *
  */
-class BucketListsFragment : Fragment() {
+class ChallengesFragment : Fragment() {
 
-    private val bucketlists : ArrayList<String> = ArrayList()
+    private val temp : ArrayList<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        for (i in 1..20)
+        for (i in 1..100)
         {
-            bucketlists.add("Yeet")
+            temp.add("Yeet")
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return LayoutInflater.from(container?.context).inflate(R.layout.fragment_bucket_lists, container, false)
+        return LayoutInflater.from(container?.context).inflate(R.layout.fragment_challenges, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvBucketLists.layoutManager = LinearLayoutManager(activity)
-        rvBucketLists.adapter = BucketLists_Adapter(bucketlists)
-        }
+        rvChallenges.layoutManager = LinearLayoutManager(activity)
+        rvChallenges.adapter = BucketLists_Adapter(temp)
     }
-
-
+}

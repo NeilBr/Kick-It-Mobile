@@ -1,5 +1,8 @@
 package com.eit.kickit.models
 
+/**
+ * Data class for individual Challenge
+ */
 data class Challenge(
     var cID : Int,
     var cName : String,
