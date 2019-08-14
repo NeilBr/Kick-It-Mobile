@@ -17,7 +17,9 @@
     <string name="menu_adventures">Adventures</string>
     <string name="menu_adventurer">Adventurer</string>
 
-    <string name="create_profile">Welcome to KickIT! In order to create a profile please enter all the information below! </string>
+    <string name="create_profile">Welcome to KickIT! In order to create a profile please enter all the information
+        below!
+    </string>
     <string name="first_name">First Name</string>
     <string name="surname">Surname</string>
     <string name="email">Email</string>
