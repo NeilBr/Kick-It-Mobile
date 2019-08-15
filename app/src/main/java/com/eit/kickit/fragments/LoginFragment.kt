@@ -7,9 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.eit.kickit.CreateProfileActivity
+import com.eit.kickit.activities.CreateProfileActivity
 import com.eit.kickit.R
-import kotlinx.android.synthetic.main.fragment_login.*
 
 class LoginFragment : Fragment() {
 

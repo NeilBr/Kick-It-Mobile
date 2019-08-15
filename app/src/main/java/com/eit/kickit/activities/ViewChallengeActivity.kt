@@ -1,4 +1,4 @@
-package com.eit.kickit.Activities
+package com.eit.kickit.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

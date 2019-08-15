@@ -1,9 +1,9 @@
-package com.eit.kickit.Activities
+package com.eit.kickit.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.eit.kickit.Adapters.Challenge_Adapter
+import com.eit.kickit.adapters.Challenge_Adapter
 import com.eit.kickit.R
 import com.eit.kickit.models.Challenge
 import kotlinx.android.synthetic.main.activity_challenges.*

@@ -1,14 +1,12 @@
-package com.eit.kickit.Adapters
+package com.eit.kickit.adapters
 
-import android.app.LauncherActivity
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.eit.kickit.Activities.ChallengesListActivity
+import com.eit.kickit.activities.ChallengesListActivity
 import com.eit.kickit.R
 import com.eit.kickit.models.BucketList
 

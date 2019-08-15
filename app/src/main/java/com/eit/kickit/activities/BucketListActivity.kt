@@ -1,9 +1,9 @@
-package com.eit.kickit.Activities
+package com.eit.kickit.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.eit.kickit.Adapters.BucketLists_Adapter
+import com.eit.kickit.adapters.BucketLists_Adapter
 import com.eit.kickit.R
 import com.eit.kickit.models.BucketList
 import kotlinx.android.synthetic.main.activity_bucket_lists.*

@@ -1,16 +1,5 @@
 package com.eit.kickit.fragments
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.eit.kickit.Adapters.BucketLists_Adapter
-import com.eit.kickit.Adapters.Challenge_Adapter
-import com.eit.kickit.R
-import kotlinx.android.synthetic.main.activity_challenges.*
-
 /**
  * Sets up the recycler view for the layout
  * This fragment is connected to a single bucket list.

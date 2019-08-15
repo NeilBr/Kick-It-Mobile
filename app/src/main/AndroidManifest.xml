@@ -10,7 +10,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
         <activity
-                android:name=".MainActivity"
+                android:name=".activities.MainActivity"
                 android:label="@string/app_name"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -20,16 +20,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Activities.ChallengesListActivity">
+        <activity android:name=".activities.ChallengesListActivity">
         </activity>
 
-        <activity android:name=".Activities.ViewChallengeActivity"></activity>
+        <activity android:name=".activities.ViewChallengeActivity"></activity>
 
-        <activity android:name=".Activities.BucketListActivity"
-                  android:parentActivityName=".MainActivity">
+        <activity android:name=".activities.BucketListActivity"
+                  android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity">
+                android:value=".activities.MainActivity">
             </meta-data>
         </activity>
     </application>

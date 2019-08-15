@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.eit.kickit.Adapters.BucketLists_Adapter
+import com.eit.kickit.adapters.BucketLists_Adapter
 
 import com.eit.kickit.R
 import com.eit.kickit.models.BucketList
