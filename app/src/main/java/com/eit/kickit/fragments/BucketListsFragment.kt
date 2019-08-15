@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.eit.kickit.Adapters.BucketLists_Adapter
 
 import com.eit.kickit.R
-import kotlinx.android.synthetic.main.fragment_bucket_lists.*
+import com.eit.kickit.models.BucketList
+import kotlinx.android.synthetic.main.activity_bucket_lists.*
 
 /**
  * Sets up the recycler view for the layout.
@@ -20,25 +21,25 @@ import kotlinx.android.synthetic.main.fragment_bucket_lists.*
  */
 class BucketListsFragment : Fragment() {
 
-    private val bucketlists : ArrayList<String> = ArrayList()
+    private val bucketlists : ArrayList<BucketList> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
-        for (i in 1..20)
-        {
-            bucketlists.add("Yeet")
-        }
+        val b1 = BucketList(0, "Easy", "First BucketList", 0)
+        val b2 = BucketList(1,"Medium", "Getting interesting", 25)
+        val b3 = BucketList(2, "Memer", "Do it for the vine", 420)
+        bucketlists.add(b1)
+        bucketlists.add(b2)
+        bucketlists.add(b3)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return LayoutInflater.from(container?.context).inflate(R.layout.fragment_bucket_lists, container, false)
+        return LayoutInflater.from(container?.context).inflate(R.layout.activity_bucket_lists, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         rvBucketLists.layoutManager = LinearLayoutManager(activity)
         rvBucketLists.adapter = BucketLists_Adapter(bucketlists)
         }

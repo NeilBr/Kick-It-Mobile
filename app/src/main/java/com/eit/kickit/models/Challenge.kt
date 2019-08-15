@@ -9,7 +9,8 @@ data class Challenge(
     var cDescription : String,
     var cPoints : Int,
     var cPrice : Double,
-    var cStatus : Boolean
+    var cStatus : Boolean,
+    var blID : Int
 )
 
 {

@@ -1,5 +1,6 @@
 package com.eit.kickit
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import androidx.fragment.app.Fragment
+import com.eit.kickit.Activities.BucketListActivity
 import com.eit.kickit.fragments.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -69,7 +71,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.nav_bucket_lists -> {
-                loadFragment(frag = BucketListsFragment())
+              //  loadFragment(frag = BucketListsFragment())
+                startActivity(Intent(this,BucketListActivity::class.java))
                 toolbar.title = "Home"
             }
 
