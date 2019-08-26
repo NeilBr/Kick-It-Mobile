@@ -1,5 +1,9 @@
 package com.eit.kickit
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -9,14 +13,31 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.fragment.app.Fragment
+import com.eit.kickit.database.DatabaseConnection
 import com.eit.kickit.fragments.*
+import com.eit.kickit.models.Adventurer
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.SQLException
+import java.sql.Statement
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    companion object {
+
+        var adventurer: Adventurer? = null
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -31,7 +52,61 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         navView.setNavigationItemSelectedListener(this)
-        loadFragment(frag = HomeFragment())
+
+        val sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
+        val tempPref = sharedPref.getString("adventurer", "null")
+
+        if (tempPref != "null"){
+            loadAdventurer(tempPref)
+            Toast.makeText(this, "Welcome ${adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
+            loadFragment(frag = HomeFragment())
+            getProfilePic().execute()
+        }
+        else{
+            loadFragment(frag = LoginFragment())
+        }
+
+    }
+
+    fun updateProfileClick(view: View){
+
+        if (adventurer == null)
+            Toast.makeText(this, "Please Login to be able to view profile!", Toast.LENGTH_LONG).show()
+        else{
+            val intent = Intent(this, ViewProfileActivity::class.java)
+            startActivity(intent)
+
+            val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+    }
+
+    fun loadAdventurer (advString: String) {
+        val props = advString.split(',')
+
+        adventurer = Adventurer(props[1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean())
+        adventurer?.setID(Integer.parseInt(props[0]))
+    }
+
+    fun logoutClicked(view: View){
+
+        val sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
+        val tempPref = sharedPref.getString("adventurer", "null")
+
+        if (tempPref != "null"){
+            val editor = sharedPref.edit()
+            editor.putString("adventurer", "null")
+            editor.commit()
+
+            Toast.makeText(this, "Bye For Now!", Toast.LENGTH_SHORT).show()
+            adventurer = null
+            loadFragment(frag = LoginFragment())
+
+            val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+
     }
 
     override fun onBackPressed() {
@@ -48,17 +123,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
-/*
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-    */
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -70,27 +134,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             R.id.nav_bucket_lists -> {
                 loadFragment(frag = BucketListsFragment())
-                toolbar.title = "Home"
+                toolbar.title = "Bucket Lists"
             }
 
             R.id.nav_suggest_challenge -> {
                 loadFragment(frag = SuggestChallengeFragment())
-                toolbar.title = "Home"
+                toolbar.title = "Suggest Challenge"
             }
 
             R.id.nav_my_bucket_list -> {
                 loadFragment(frag = MyBucketListFragment())
-                toolbar.title = "Home"
+                toolbar.title = "My Bucketlist"
             }
 
             R.id.nav_progress -> {
                 loadFragment(frag = ProgressFragment())
-                toolbar.title = "Home"
+                toolbar.title = "Progress"
             }
 
             R.id.nav_comrades -> {
                 loadFragment(frag = ComradesFragment())
-                toolbar.title = "Home"
+                toolbar.title = "Comrades"
             }
 
 
@@ -99,7 +163,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
              */
             R.id.nav_login -> {
                 loadFragment(frag = LoginFragment())
-                toolbar.title = "Home"
+                toolbar.title = "Login"
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -111,5 +175,69 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fm = supportFragmentManager.beginTransaction()
         fm.replace(R.id.frameLayout, frag)
         fm.commit()
+    }
+
+    inner class getProfilePic : AsyncTask<Void, Void, Boolean>() {
+
+        private var CONN: Connection? = null
+        private var STMNT: Statement? = null
+        private lateinit var RESULT: ResultSet
+
+        override fun onPostExecute(result: Boolean?) {
+
+            try{
+                val byteImage = RESULT.getBytes("adv_profilepic")
+                headerName.text = "${adventurer?.advFirstName} ${adventurer?.advSurname}"
+                if (byteImage == null)
+                    loadPlaceholder()
+                else
+                    loadProfilePic(byteImage)
+
+            }catch(ex: Exception){
+                ex.printStackTrace()
+            }
+
+        }
+
+        override fun doInBackground(vararg p0: Void?): Boolean {
+            try {
+                CONN = DatabaseConnection().createConnection()
+
+                val qry = "SELECT adv_profilepic FROM adventurers WHERE adv_email = '${MainActivity.adventurer?.advEmail}'"
+
+                STMNT = CONN!!.createStatement()
+                RESULT = STMNT!!.executeQuery(qry)
+
+                return RESULT.next()
+
+            } catch (ex: SQLException) {
+                ex.printStackTrace()
+                return false
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                return false
+            }
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+        }
+    }
+
+    private fun loadProfilePic(imageBytes: ByteArray){
+        var byteSize = imageBytes.size
+        val res = resources
+        val src = BitmapFactory.decodeByteArray(imageBytes, 0, byteSize)
+        val dr = RoundedBitmapDrawableFactory.create(res, src)
+        dr.isCircular = true
+        headerImage.setImageDrawable(dr)
+    }
+
+    private fun loadPlaceholder(){
+        val res = resources
+        val src = BitmapFactory.decodeResource(res, R.drawable.placeholder_image)
+        val dr = RoundedBitmapDrawableFactory.create(res, src)
+        dr.isCircular = true
+        headerImage.setImageDrawable(dr)
     }
 }
