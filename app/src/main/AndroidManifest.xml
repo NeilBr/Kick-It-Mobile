@@ -20,18 +20,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.ChallengesListActivity">
-        </activity>
+        <activity android:name=".activities.ChallengesListActivity"/>
 
-        <activity android:name=".activities.ViewChallengeActivity"></activity>
+        <activity android:name=".activities.ViewChallengeActivity"/>
 
-        <activity android:name=".activities.BucketListActivity"
-                  android:parentActivityName=".activities.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity">
-            </meta-data>
-        </activity>
     </application>
 
 </manifest>

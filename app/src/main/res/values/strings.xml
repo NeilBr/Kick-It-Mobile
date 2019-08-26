@@ -35,4 +35,5 @@
     <string name="label_ChallengeDescr">Description</string>
     <string name="label_ChallengePo">Points</string>
     <string name="label_ChallengePr">Price</string>
+    <string name="button_remove">Remove</string>
 </resources>

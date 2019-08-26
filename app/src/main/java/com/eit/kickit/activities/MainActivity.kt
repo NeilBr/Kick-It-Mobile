@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.nav_bucket_lists -> {
-              //  loadFragment(frag = BucketListsFragment())
-                startActivity(Intent(this,BucketListActivity::class.java))
+                loadFragment(frag = BucketListFragment())
+                //startActivity(Intent(this,BucketListActivity::class.java))
                 toolbar.title = "Home"
             }
 

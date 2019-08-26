@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eit.kickit.R
-import com.eit.kickit.adapters.Challenge_Adapter
 import com.eit.kickit.adapters.MyBucketList_Adapter
 import com.eit.kickit.models.Challenge
-import kotlinx.android.synthetic.main.activity_challenges.*
 import kotlinx.android.synthetic.main.fragment_my_bucket_list.*
 
 class MyBucketListFragment : Fragment() {

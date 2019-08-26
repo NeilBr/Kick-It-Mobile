@@ -32,6 +32,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
         init {
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
+                intent.putExtra("MyChallenge", "View my challenge layout")
                 itemView.context.startActivity(intent)
             }
         }

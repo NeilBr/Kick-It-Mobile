@@ -32,6 +32,7 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerV
         init {
             itemView.setOnClickListener {
                val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
+                intent.putExtra("MyChallenge", "View challenge layout")
                itemView.context.startActivity(intent)
             }
         }
