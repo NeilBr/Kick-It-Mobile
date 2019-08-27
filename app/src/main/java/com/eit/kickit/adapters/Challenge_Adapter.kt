@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.eit.kickit.activities.ViewChallengeActivity
+import com.eit.kickit.ViewChallengeActivity
 import com.eit.kickit.R
 import com.eit.kickit.models.Challenge
 

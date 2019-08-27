@@ -65,7 +65,7 @@ public class Validator{
                         }
                         else {
                             result = false
-                            view.helperText = "Must contain a number, a letter and be longer than 8 characters"
+                            view.helperText = "Must Contain: Number, Letter and be 8 Characters"
                         }
                     }
                 }
