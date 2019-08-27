@@ -1,12 +1,9 @@
 package com.eit.kickit
 
-<<<<<<< HEAD:app/src/main/java/com/eit/kickit/activities/MainActivity.kt
 import android.content.Intent
-=======
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
->>>>>>> Thomas:app/src/main/java/com/eit/kickit/MainActivity.kt
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -20,13 +17,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.fragment.app.Fragment
-<<<<<<< HEAD:app/src/main/java/com/eit/kickit/activities/MainActivity.kt
 import com.eit.kickit.fragments.*
 import com.eit.kickit.models.Challenge
-=======
 import com.eit.kickit.database.DatabaseConnection
 import com.eit.kickit.models.Adventurer
->>>>>>> Thomas:app/src/main/java/com/eit/kickit/MainActivity.kt
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import java.sql.Connection
@@ -36,18 +30,12 @@ import java.sql.Statement
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-<<<<<<< HEAD:app/src/main/java/com/eit/kickit/activities/MainActivity.kt
     //Temp arrayList just to show myBL works
-
-    public var Temp : ArrayList<Challenge> = ArrayList()
-
-=======
     companion object {
 
         var adventurer: Adventurer? = null
 
     }
->>>>>>> Thomas:app/src/main/java/com/eit/kickit/MainActivity.kt
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -85,21 +73,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun updateProfileClick(view: View){
 
+
         if (adventurer == null)
             Toast.makeText(this, "Please Login to be able to view profile!", Toast.LENGTH_LONG).show()
         else{
-            val intent = Intent(this, ViewProfileActivity::class.java)
-            startActivity(intent)
+            try{
+                val intent = Intent(this, ViewProfileActivity::class.java)
+                startActivity(intent)
 
-            val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-            drawerLayout.closeDrawer(GravityCompat.START)
+                val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            catch(ex: Exception){
+                ex.printStackTrace()
+            }
+
         }
     }
 
-    fun loadAdventurer (advString: String) {
-        val props = advString.split(',')
+    fun loadAdventurer (advString: String?) {
+        val props = advString?.split(',')
 
-        adventurer = Adventurer(props[1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean())
+        adventurer = Adventurer(props!![1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean())
         adventurer?.setID(Integer.parseInt(props[0]))
     }
 
@@ -148,14 +143,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.nav_bucket_lists -> {
-<<<<<<< HEAD:app/src/main/java/com/eit/kickit/activities/MainActivity.kt
                 loadFragment(frag = BucketListFragment())
                 //startActivity(Intent(this,BucketListActivity::class.java))
                 toolbar.title = "Home"
-=======
-                loadFragment(frag = BucketListsFragment())
+              //  loadFragment(frag = BucketListFragment())
                 toolbar.title = "Bucket Lists"
->>>>>>> Thomas:app/src/main/java/com/eit/kickit/MainActivity.kt
             }
 
             R.id.nav_suggest_challenge -> {

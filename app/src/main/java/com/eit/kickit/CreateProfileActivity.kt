@@ -1,72 +1,3 @@
-<<<<<<< HEAD:app/src/main/java/com/eit/kickit/activities/CreateProfileActivity.kt
-package com.eit.kickit.activities
-
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.view.View
-import android.widget.Toast
-import com.eit.kickit.R
-import com.eit.kickit.common.Validator
-import kotlinx.android.synthetic.main.activity_create_profile.*
-
-class CreateProfileActivity : AppCompatActivity() {
-
-    var firstname = ""
-    var surname = ""
-    var Email = ""
-    var phone = ""
-    var pword = ""
-    var rtpword = ""
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_profile)
-    }
-
-    //Get the data from the form
-    //Validate the data
-    //Create the object if data is valid
-    //Post the object to the DB - Need to wait for a DB
-    //Go back to the login screen.
-    //Add the onclick for the cancel button.
-
-    fun singupClick(view: View){
-        firstname = firstName.text.toString()
-        surname = surnameName.text.toString()
-        Email = email.text.toString()
-        phone = telephone.text.toString()
-        pword = password.text.toString()
-        rtpword = retype_password.text.toString()
-
-        if(validation()){
-            //DatabaseController.createAdventurer(); --Return an adventurer object.
-            Toast.makeText(this, "Valid, Do Da Tings", Toast.LENGTH_SHORT).show()
-        }
-        else{
-            Toast.makeText(this, "Please enter all the fields correctly", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    fun validation(): Boolean{
-
-        var fnValid = false
-        var snValid = false
-        var emValid = false
-        var tpValid = false
-        var pValid = false
-        var rtpValid = false
-
-        fnValid = Validator.validateView(fn_textInput, firstname, 1)
-        snValid = Validator.validateView(sn_textInput, surname, 1)
-        emValid = Validator.validateView(em_textInput, Email, 2)
-        tpValid = Validator.validateView(tn_textInput, phone, 3)
-        pValid = Validator.validateView(pw_textInput, pword, 4)
-        rtpValid = Validator.validateView(pwr_textInput, rtpword, 1) && rtpword.equals(pword)
-
-        return fnValid && snValid && emValid && tpValid && pValid && rtpValid
-    }
-}
-=======
 package com.eit.kickit
 
 import android.app.Activity
@@ -98,7 +29,7 @@ class CreateProfileActivity : AppCompatActivity() {
     var pword = ""
     var rtpword = ""
     var newPic: Boolean = false
-    var uri: Uri? = Uri.EMPTY
+    var uri: Uri = Uri.EMPTY
     lateinit var pic: InputStream
 
     var LOAD_TYPE: String? = "null"
@@ -145,21 +76,21 @@ class CreateProfileActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(resultCode == Activity.RESULT_OK && requestCode == 1000){
-            createRoundImage(data)
+            createRoundImage(data!!)
         }
     }
 
-    private fun createRoundImage(data: Intent?){
+    private fun createRoundImage(data: Intent){
         try{
-            val ist = contentResolver.openInputStream(data?.data)
-            pic = ist
+            val ist = contentResolver.openInputStream(data.data!!)
+            pic = ist!!
             val res = resources
             val src = BitmapFactory.decodeStream(ist)
             val dr = RoundedBitmapDrawableFactory.create(res, src)
             dr.isCircular = true
             uploadProfilePic.setImageDrawable(dr)
             newPic = true
-            uri = data?.data
+            uri = data.data!!
         }
         catch(ex: java.lang.Exception){
             ex.printStackTrace()
@@ -248,9 +179,9 @@ class CreateProfileActivity : AppCompatActivity() {
             })
     }
 
-    fun createByteArray(): ByteArray{
+    fun createByteArray(): ByteArray?{
         val ist = contentResolver.openInputStream(uri)
-        val bytes = ist.readBytes()
+        val bytes = ist!!.readBytes()
         return bytes
     }
 
@@ -406,4 +337,3 @@ class CreateProfileActivity : AppCompatActivity() {
         }
     }
 }
->>>>>>> Thomas:app/src/main/java/com/eit/kickit/CreateProfileActivity.kt

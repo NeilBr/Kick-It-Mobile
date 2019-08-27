@@ -36,9 +36,10 @@
     <string name="retype_password">Retype Password</string>
     <string name="sign_up">Sign Up</string>
     <string name="cancel">Cancel</string>
-    <string name="update_profile">Make any changes and save when done!</string>
     <string name="update_button">Save</string>
     <string name="uploadPic">Upload a Picture</string>
+    <string name="update_profile">Make any changes and save when done!</string>
+
 
     <!--View Profile-->
 

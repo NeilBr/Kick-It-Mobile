@@ -29,9 +29,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.ChallengesListActivity"/>
+        <activity android:name=".ChallengesListActivity"/>
 
-        <activity android:name=".activities.ViewChallengeActivity"/>
+        <activity android:name=".ViewChallengeActivity"/>
+
+        <activity android:name=".ViewProfileActivity"/>
 
     </application>
 
