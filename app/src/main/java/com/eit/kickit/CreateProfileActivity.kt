@@ -198,6 +198,7 @@ class CreateProfileActivity : AppCompatActivity() {
             if (result!! == "") {
                 em_textInput.helperText = ""
                 Toast.makeText(this@CreateProfileActivity, "Welcome to KickIT", Toast.LENGTH_SHORT).show()
+                CONN?.close()
                 this@CreateProfileActivity.finish()
             } else {
                 val errors = result.split(' ')
@@ -275,6 +276,7 @@ class CreateProfileActivity : AppCompatActivity() {
                 editor?.putString("adventurer", advString)
                 editor?.commit()
 
+                CONN?.close()
                 this@CreateProfileActivity.setResult(Activity.RESULT_OK)
                 this@CreateProfileActivity.finish()
             } else {

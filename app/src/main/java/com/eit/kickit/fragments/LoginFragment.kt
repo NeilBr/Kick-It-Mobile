@@ -125,9 +125,12 @@ class LoginFragment : Fragment() {
                     saveToLocal(advString)
                     Toast.makeText(this@LoginFragment.context, "Welcome ${MainActivity.adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
 
+                    CONN?.close()
+
                     val fm = fragmentManager!!.beginTransaction()
                     fm.replace(R.id.frameLayout, HomeFragment())
                     fm.commit()
+
                 }
                 else
                     passwordLayout.helperText = "Incorrect Password"

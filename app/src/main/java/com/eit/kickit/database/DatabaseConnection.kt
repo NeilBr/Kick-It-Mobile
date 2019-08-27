@@ -14,7 +14,7 @@ class DatabaseConnection{
         connectionProps.put("password", "604255hdd")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
-            res = DriverManager.getConnection("jdbc:mysql://10.0.0.27:3306/test", "root", "604255hdd")
+            res = DriverManager.getConnection("jdbc:mysql://kickit-db.cqqbwmmosjza.eu-west-1.rds.amazonaws.com:3306/kickit", "kickitadmin", "kickitwrr302")
             println("Connection Made")
         } catch (ex: SQLException) {
             ex.printStackTrace()

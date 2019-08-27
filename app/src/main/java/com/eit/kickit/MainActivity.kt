@@ -192,6 +192,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     loadPlaceholder()
                 else
                     loadProfilePic(byteImage)
+                CONN?.close()
 
             }catch(ex: Exception){
                 ex.printStackTrace()

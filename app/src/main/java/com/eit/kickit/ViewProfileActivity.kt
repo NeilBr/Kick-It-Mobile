@@ -111,6 +111,8 @@ class ViewProfileActivity : AppCompatActivity() {
                     loadProfilePic(byteImage)
                 profilePicLoading.visibility = View.INVISIBLE
 
+                CONN?.close()
+
             }catch(ex: Exception){
                 ex.printStackTrace()
             }
