@@ -13,9 +13,14 @@ import android.view.Menu
 import androidx.fragment.app.Fragment
 import com.eit.kickit.R
 import com.eit.kickit.fragments.*
+import com.eit.kickit.models.Challenge
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    //Temp arrayList just to show myBL works
+
+    public var Temp : ArrayList<Challenge> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
