@@ -17,8 +17,6 @@ import com.eit.kickit.models.BucketList
  */
 class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>): RecyclerView.Adapter<BucketLists_Adapter.ViewHolder>() {
 
-    public val Bucketlists: ArrayList<BucketList> = bucketlists
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view : View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_item, parent, false)
         return ViewHolder(view, bucketlists)
@@ -46,9 +44,6 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>): Recyc
                 intent.putParcelableArrayListExtra("BucketLists", data as java.util.ArrayList<out Parcelable>)
                 intent.putExtra("ID", blId)
                 itemView.context.startActivity(intent)
-
-
-
             }
         }
 
