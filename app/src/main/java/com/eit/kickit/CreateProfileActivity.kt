@@ -46,8 +46,6 @@ class CreateProfileActivity : AppCompatActivity() {
         }
         else{
             welcome_textview.text = getString(R.string.update_profile)
-            pw_textInput.isEnabled = false
-            pwr_textInput.isEnabled = false
             loadDetails()
         }
 
@@ -119,7 +117,7 @@ class CreateProfileActivity : AppCompatActivity() {
         Email = email.text.toString()
         phone = telephone.text.toString()
 
-        if (updateValidation()){
+        if (validation()){
             updateAdventurer().execute()
         }
         else{
@@ -148,35 +146,6 @@ class CreateProfileActivity : AppCompatActivity() {
         rtpValid = Validator.validateView(pwr_textInput, rtpword, 1) && rtpword.equals(pword)
 
         return fnValid && snValid && emValid && tpValid && pValid && rtpValid
-    }
-
-    private fun updateValidation(): Boolean {
-        var fnValid = false
-        var snValid = false
-        var emValid = false
-        var tpValid = false
-
-        fnValid = Validator.validateView(fn_textInput, firstname, 1)
-        snValid = Validator.validateView(sn_textInput, surname, 1)
-        emValid = Validator.validateView(em_textInput, Email, 2)
-        tpValid = Validator.validateView(tn_textInput, phone, 3)
-
-        return fnValid && snValid && emValid && tpValid
-    }
-
-    fun hashPassword(pw: String): String {
-        val HEX_CHARS = "0123456789ABCDEF"
-        val digest = MessageDigest.getInstance("SHA-1").digest(pw.toByteArray())
-        return digest.joinToString(
-            separator = "",
-            transform = { a ->
-                String(
-                    charArrayOf(
-                        HEX_CHARS[a.toInt() shr 4 and 0x0f],
-                        HEX_CHARS[a.toInt() and 0x0f]
-                    )
-                )
-            })
     }
 
     fun createByteArray(): ByteArray?{
@@ -214,7 +183,6 @@ class CreateProfileActivity : AppCompatActivity() {
             try {
                 CONN = DatabaseConnection().createConnection()
 
-                val password = hashPassword(pword)
                 var qry = ""
 
                 if (newPic){
@@ -226,14 +194,14 @@ class CreateProfileActivity : AppCompatActivity() {
                     stmnt?.setString(2, surname)
                     stmnt?.setString(3, Email)
                     stmnt?.setString(4, phone)
-                    stmnt?.setString(5, password)
+                    stmnt?.setString(5, pword)
                     stmnt?.setBytes(6, imageBytes)
                     stmnt?.execute()
                 }
                 else{
                     qry =
                         "INSERT INTO `adventurers` (`adv_firstName`, `adv_surname`, `adv_email`, `adv_telephone`, `adv_password`)\n" +
-                                "VALUES('$firstname','$surname','$Email','$phone','$password')"
+                                "VALUES('$firstname','$surname','$Email','$phone','$pword')"
 
                     STMNT = CONN!!.createStatement()
                     STMNT!!.execute(qry)
@@ -297,13 +265,15 @@ class CreateProfileActivity : AppCompatActivity() {
                             "adv_email = ?," +
                             "adv_telephone = ?," +
                             "adv_profilepic = ?" +
+                            "adv_password = ?" +
                             "WHERE adv_id = ${MainActivity.adventurer?.getID()}")
 
                     stmnt?.setString(1, firstname)
                     stmnt?.setString(2, surname)
                     stmnt?.setString(3, Email)
                     stmnt?.setString(4, phone)
-                    stmnt?.setBytes(5, imageBytes)
+                    stmnt?.setString(5, pword)
+                    stmnt?.setBytes(6, imageBytes)
                     stmnt?.execute()
                 }
                 else {
@@ -313,6 +283,7 @@ class CreateProfileActivity : AppCompatActivity() {
                                 "adv_surname = '$surname'," +
                                 "adv_email = '$Email'," +
                                 "adv_telephone = '$phone'" +
+                                "adv_password = '$pword'" +
                                 "WHERE adv_id = ${MainActivity.adventurer?.getID()}"
 
                     STMNT = CONN!!.createStatement()

@@ -17,6 +17,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.fragment.app.Fragment
+import com.amazonaws.mobile.client.AWSMobileClient
 import com.eit.kickit.fragments.*
 import com.eit.kickit.models.Challenge
 import com.eit.kickit.database.DatabaseConnection
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
         val tempPref = sharedPref.getString("adventurer", "null")
+
+        AWSMobileClient.getInstance().initialize(this).execute()
 
         if (tempPref != "null"){
             loadAdventurer(tempPref)

@@ -1,8 +1,9 @@
 package com.eit.kickit.fragments
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,36 +14,34 @@ import androidx.fragment.app.Fragment
 import com.eit.kickit.CreateProfileActivity
 import com.eit.kickit.MainActivity
 import com.eit.kickit.R
+import com.eit.kickit.common.FileHandler
 import com.eit.kickit.common.Validator
-import com.eit.kickit.database.DatabaseConnection
+import com.eit.kickit.database.Database
 import com.eit.kickit.models.Adventurer
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.android.synthetic.main.activity_create_profile.*
 import kotlinx.android.synthetic.main.fragment_login.*
-import java.security.MessageDigest
-import java.sql.Connection
+import java.io.File
+import java.io.InputStream
 import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Statement
 
 class LoginFragment : Fragment() {
 
-    var loginText: TextInputEditText? = null
-    var passwordText: TextInputEditText? = null
+    private var loginText: TextInputEditText? = null
+    private var passwordText: TextInputEditText? = null
 
-    var email: String = ""
-    var pword:  String = ""
+    private var email: String = ""
+    private var pword:  String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.fragment_login, container, false)
 
         val btnASignUp = view.findViewById<Button>(R.id.btnSignUp)
-        btnASignUp.setOnClickListener{ view ->
+        btnASignUp.setOnClickListener{
             createProfile()
         }
 
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)
-        btnLogin.setOnClickListener{ view ->
+        btnLogin.setOnClickListener{
             login()
         }
 
@@ -61,109 +60,84 @@ class LoginFragment : Fragment() {
 
     private fun login(){
 
-        if (Validator.validateView(email_Layout, loginText!!.text.toString(), 1) || Validator.validateView(passwordLayout, passwordText!!.text.toString(), 1)){
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1000)
 
-            email = loginText!!.text.toString()
-            pword = passwordText!!.text.toString()
 
-            checkLogin().execute()
+//        if (Validator.validateView(email_Layout, loginText!!.text.toString(), 1) || Validator.validateView(passwordLayout, passwordText!!.text.toString(), 1)){
+//
+//            email = loginText!!.text.toString()
+//            pword = passwordText!!.text.toString()
+//
+//            progressBarL.visibility = View.VISIBLE
+//            val query = "SELECT * FROM adventurers WHERE adv_email= '$email'"
+//
+//            Database().runQuery(query, true){
+//                result -> checkLogin(result)
+//            }
+//        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == Activity.RESULT_OK && requestCode == 1000){
+            uploadFile(data)
         }
     }
 
-    fun hashPassword(pw: String): String {
-        val HEX_CHARS = "0123456789ABCDEF"
-        val digest = MessageDigest.getInstance("SHA-1").digest(pw.toByteArray())
-        return digest.joinToString(
-            separator = "",
-            transform = { a ->
-                String(
-                    charArrayOf(
-                        HEX_CHARS[a.toInt() shr 4 and 0x0f],
-                        HEX_CHARS[a.toInt() and 0x0f]
-                    )
-                )
-            })
+    fun uploadFile(data: Intent?){
+        val uri = data!!.data
+
+        FileHandler(activity!!.applicationContext).uploadFile(uri)
     }
 
-    fun saveToLocal(advString: String){
+    private fun checkLogin(result: Any){
+
+        val resultSet: ResultSet = result as ResultSet
+
+        if(resultSet.next()){
+            email_Layout.helperText = ""
+
+            if (pword == resultSet.getString("adv_password")){
+
+                val advString = "${resultSet.getString("adv_id")},${resultSet.getString("adv_firstName")},${resultSet.getString("adv_surname")},${resultSet.getString("adv_email")},${resultSet.getString("adv_telephone")},${resultSet.getDouble("adv_totalPoints")}, ${resultSet.getBoolean("adv_admin")}"
+
+                MainActivity.adventurer = Adventurer(
+                    resultSet.getString("adv_firstName"),
+                    resultSet.getString("adv_surname"),
+                    resultSet.getString("adv_email"),
+                    resultSet.getString("adv_telephone"),
+                    resultSet.getDouble("adv_totalPoints"),
+                    true,
+                    resultSet.getBoolean("adv_admin")
+                )
+                MainActivity.adventurer?.setID(resultSet.getInt("adv_id"))
+
+                saveToLocal(advString)
+                Toast.makeText(this@LoginFragment.context, "Welcome ${MainActivity.adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
+
+                val fm = fragmentManager!!.beginTransaction()
+                fm.replace(R.id.frameLayout, HomeFragment())
+                fm.commit()
+
+            }
+            else
+                passwordLayout.helperText = "Incorrect Password"
+        }
+        else{
+            email_Layout.helperText = "Incorrect Email"
+        }
+
+        progressBarL.visibility = View.INVISIBLE
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private fun saveToLocal(advString: String){
 
         val sharedPreferences = this.context?.getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
-        var editor = sharedPreferences?.edit()
+        val editor = sharedPreferences?.edit()
         editor?.putString("adventurer", advString)
         editor?.commit()
 
-        loadAdventurer(advString)
     }
-
-    fun loadAdventurer (advString: String) {
-        val props = advString.split(',')
-
-        MainActivity.adventurer = Adventurer(props[1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean())
-        MainActivity.adventurer?.setID(Integer.parseInt(props[0]))
-
-    }
-
-    inner class checkLogin : AsyncTask<Void, Void, Boolean>() {
-
-        private var CONN: Connection? = null
-        private var STMNT: Statement? = null
-        private var RESULT: ResultSet? = null
-
-        override fun onPostExecute(result: Boolean?) {
-
-            progressBarL.visibility = View.INVISIBLE
-
-            if(result!!){
-                email_Layout.helperText = ""
-
-                val password = hashPassword(pword)
-
-                if (password.equals(RESULT!!.getString("adv_password"))){
-
-                    val advString = "${RESULT!!.getString("adv_id")},${RESULT!!.getString("adv_firstName")},${RESULT!!.getString("adv_surname")},${RESULT!!.getString("adv_email")},${RESULT!!.getString("adv_telephone")},${RESULT!!.getDouble("adv_totalPoints")}, ${RESULT!!.getBoolean("adv_admin")}"
-
-                    saveToLocal(advString)
-                    Toast.makeText(this@LoginFragment.context, "Welcome ${MainActivity.adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
-
-                    CONN?.close()
-
-                    val fm = fragmentManager!!.beginTransaction()
-                    fm.replace(R.id.frameLayout, HomeFragment())
-                    fm.commit()
-
-                }
-                else
-                    passwordLayout.helperText = "Incorrect Password"
-            }
-            else{
-                email_Layout.helperText = "Incorrect Email"
-            }
-        }
-
-        override fun doInBackground(vararg p0: Void?): Boolean {
-            try {
-                CONN = DatabaseConnection().createConnection()
-
-                val qry = "SELECT * FROM adventurers WHERE adv_email = '$email'"
-
-                STMNT = CONN!!.createStatement()
-                RESULT = STMNT!!.executeQuery(qry)
-
-                return RESULT!!.next()
-
-            } catch (ex: SQLException) {
-                ex.printStackTrace()
-                return false
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                return false
-            }
-        }
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progressBarL.visibility = View.VISIBLE
-        }
-    }
-
 }
