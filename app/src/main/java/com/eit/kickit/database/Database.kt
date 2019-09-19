@@ -31,11 +31,17 @@ class Database {
         private var cb = callback
 
         override fun doInBackground(vararg p0: String): Any {
-            createConnection()
-            statement = connection!!.prepareStatement(p0[0])
-            return when(select){
-                true -> statement!!.executeQuery()
-                false -> statement!!.execute()
+            try{
+                createConnection()
+                statement = connection!!.prepareStatement(p0[0])
+
+                return when(select){
+                    true -> statement!!.executeQuery()
+                    false -> statement!!.execute()
+                }
+            }
+            catch(ex: Exception){
+                return ex.message!!
             }
         }
 

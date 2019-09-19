@@ -1,7 +1,6 @@
 package com.eit.kickit.fragments
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,14 +13,11 @@ import androidx.fragment.app.Fragment
 import com.eit.kickit.CreateProfileActivity
 import com.eit.kickit.MainActivity
 import com.eit.kickit.R
-import com.eit.kickit.common.FileHandler
 import com.eit.kickit.common.Validator
 import com.eit.kickit.database.Database
 import com.eit.kickit.models.Adventurer
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.android.synthetic.main.fragment_login.*
-import java.io.File
-import java.io.InputStream
 import java.sql.ResultSet
 
 class LoginFragment : Fragment() {
@@ -33,7 +29,7 @@ class LoginFragment : Fragment() {
     private var pword:  String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_login, container, false)
+        val view = inflater.inflate(R.layout.fragment_login, container, false)
 
         val btnASignUp = view.findViewById<Button>(R.id.btnSignUp)
         btnASignUp.setOnClickListener{
@@ -51,7 +47,6 @@ class LoginFragment : Fragment() {
         return view
     }
 
-
     private fun createProfile(){
         val intent = Intent(this.context, CreateProfileActivity::class.java)
         intent.putExtra(getString(R.string.LOAD_TYPE), getString(R.string.LOAD_CREATE_PROFILE))
@@ -59,36 +54,18 @@ class LoginFragment : Fragment() {
     }
 
     private fun login(){
+        if (Validator.validateView(email_Layout, loginText!!.text.toString(), 1) || Validator.validateView(passwordLayout, passwordText!!.text.toString(), 1)){
 
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, 1000)
+            email = loginText!!.text.toString()
+            pword = passwordText!!.text.toString()
 
+            progressBarL.visibility = View.VISIBLE
+            val query = "SELECT * FROM adventurers WHERE adv_email= '$email'"
 
-//        if (Validator.validateView(email_Layout, loginText!!.text.toString(), 1) || Validator.validateView(passwordLayout, passwordText!!.text.toString(), 1)){
-//
-//            email = loginText!!.text.toString()
-//            pword = passwordText!!.text.toString()
-//
-//            progressBarL.visibility = View.VISIBLE
-//            val query = "SELECT * FROM adventurers WHERE adv_email= '$email'"
-//
-//            Database().runQuery(query, true){
-//                result -> checkLogin(result)
-//            }
-//        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(resultCode == Activity.RESULT_OK && requestCode == 1000){
-            uploadFile(data)
+            Database().runQuery(query, true){
+                result -> checkLogin(result)
+            }
         }
-    }
-
-    fun uploadFile(data: Intent?){
-        val uri = data!!.data
-
-        FileHandler(activity!!.applicationContext).uploadFile(uri)
     }
 
     private fun checkLogin(result: Any){
@@ -100,7 +77,7 @@ class LoginFragment : Fragment() {
 
             if (pword == resultSet.getString("adv_password")){
 
-                val advString = "${resultSet.getString("adv_id")},${resultSet.getString("adv_firstName")},${resultSet.getString("adv_surname")},${resultSet.getString("adv_email")},${resultSet.getString("adv_telephone")},${resultSet.getDouble("adv_totalPoints")}, ${resultSet.getBoolean("adv_admin")}"
+                val advString = "${resultSet.getString("adv_id")},${resultSet.getString("adv_firstName")},${resultSet.getString("adv_surname")},${resultSet.getString("adv_email")},${resultSet.getString("adv_telephone")},${resultSet.getDouble("adv_totalPoints")}, ${resultSet.getBoolean("adv_admin")}, ${resultSet.getString("adv_profilepic")}"
 
                 MainActivity.adventurer = Adventurer(
                     resultSet.getString("adv_firstName"),
