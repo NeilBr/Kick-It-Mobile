@@ -14,11 +14,11 @@ public class Validator{
             when(type){
                 1 -> {
                     if(text.isNotBlank()){
-                        view.helperText = ""
+                        view.error = ""
                         result = true
                     }
                     else{
-                        view.helperText = "Required"
+                        view.error = "Required"
                         result = false
                     }
                 }
@@ -28,11 +28,11 @@ public class Validator{
                     if (result){
                         if (android.util.Patterns.EMAIL_ADDRESS.matcher(text).matches()){
                             result = true
-                            view.helperText = ""
+                            view.error = ""
                         }
                         else{
                             result = false
-                            view.helperText = "Enter Valid Email"
+                            view.error = "Enter Valid Email"
                         }
 
                     }
@@ -43,11 +43,11 @@ public class Validator{
                     if (result){
                         if(android.util.Patterns.PHONE.matcher(text).matches() && (text.length == 10)){
                             result = true
-                            view.helperText = ""
+                            view.error = ""
                         }
                         else {
                             result = false
-                            view.helperText = "Enter Valid Phone Number"
+                            view.error = "Enter Valid Phone Number"
                         }
                     }
                 }
@@ -56,16 +56,25 @@ public class Validator{
                     result = validateView(view, text, 1)
                     //Longer than 8 characters
                     //One number
-                    val check = "a[a-z0-9]+d?".toRegex()
+                    val check = "a[a-zA-Z0-9]+d?".toRegex()
+
+                    val letterCheck = ".*[a-zA-Z].*".toRegex()
+                    val numCheck = ".*[0-9].*".toRegex()
 
                     if(result){
-                        if(check.containsMatchIn(text) && (text.length >= 8)){
-                            result = true
-                            view.helperText = ""
+                        if(text.length >= 8){
+                            if(letterCheck.containsMatchIn(text) && numCheck.containsMatchIn(text)){
+                                result = true
+                                view.helperText = ""
+                            }
+                            else{
+                                result = false
+                                view.error = "Must contain letters and numbers"
+                            }
                         }
                         else {
                             result = false
-                            view.helperText = "Must Contain: Number, Letter and be 8 Characters"
+                            view.error = "Must be more than 8 or more characters."
                         }
                     }
                 }

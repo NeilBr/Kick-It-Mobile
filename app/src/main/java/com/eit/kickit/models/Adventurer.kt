@@ -1,5 +1,7 @@
 package com.eit.kickit.models
 
+import android.graphics.Bitmap
+
 data class Adventurer (
     var advFirstName: String,
     var advSurname: String,
@@ -9,14 +11,32 @@ data class Adventurer (
     var advActive: Boolean,
     var advAdmin: Boolean)
 {
-    var avdID: Int = 0
+    private var avdID: Int = 0
+    private var advPicLink = ""
+    private var advPic: Bitmap? = null
 
-    public fun setID(id: Int){
+    fun setID(id: Int){
         avdID = id
     }
 
-    public fun getID(): Int{
+    fun getID(): Int{
         return avdID
+    }
+
+    fun setPicLink(link: String){
+        advPicLink = link
+    }
+
+    fun getPicLink() : String{
+        return advPicLink
+    }
+
+    fun setPic(pic: Bitmap?){
+        advPic = pic
+    }
+
+    fun getPic() : Bitmap?{
+        return advPic
     }
 
     fun updateDetails(name: String, surname: String, email: String, phone: String){

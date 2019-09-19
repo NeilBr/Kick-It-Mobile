@@ -10,7 +10,7 @@ class DatabaseConnection{
         var res: Connection? = null
 
         val connectionProps = Properties()
-        connectionProps.put("user", "root")
+        connectionProps["user"] = "root"
         connectionProps.put("password", "604255hdd")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()

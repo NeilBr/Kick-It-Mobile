@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import com.eit.kickit.common.FileHandler
 import com.eit.kickit.database.DatabaseConnection
 import com.eit.kickit.fragments.HomeFragment
 import kotlinx.android.synthetic.main.activity_view_profile.*
@@ -28,6 +29,7 @@ class ViewProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_profile)
         loadDetails()
+        profilePicLoading.visibility = View.VISIBLE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -46,14 +48,19 @@ class ViewProfileActivity : AppCompatActivity() {
     }
 
     private fun loadDetails(){
-
-        getProfilePic().execute()
-
         viewEmail.text = MainActivity.adventurer?.advEmail
         viewFirstName.text = MainActivity.adventurer?.advFirstName
         viewSurname.text = MainActivity.adventurer?.advSurname
 
         loadCompletedChallenges()
+
+        if(MainActivity.adventurer?.getPic() != null){
+            profilePicture.setImageBitmap(MainActivity.adventurer?.getPic())
+            profilePicLoading.visibility = View.INVISIBLE
+        }
+        else{
+            val bitmap = FileHandler(this).downloadFile(MainActivity.adventurer!!.advFirstName + MainActivity.adventurer!!.advSurname, profilePicture, profilePicLoading)
+        }
     }
 
     private fun loadProfilePic(imageBytes: ByteArray){
@@ -77,7 +84,7 @@ class ViewProfileActivity : AppCompatActivity() {
         //Will include a a get and then will display them!
         //But for now, DUMMY DATA BOIII
 
-        if (MainActivity.adventurer?.avdID == 1){
+        if (MainActivity.adventurer?.getID() == 1){
 
             val listItems = arrayOf("Pet a Cat \t\t\t\t 1 point" ,
                 "Attend a lecture \t\t\t\t 20 Points",
@@ -92,56 +99,6 @@ class ViewProfileActivity : AppCompatActivity() {
 
             val adapter = ArrayAdapter(this , R.layout.dummy_will_delete, listItems)
             completed_challenges.adapter = adapter
-        }
-    }
-
-    inner class getProfilePic : AsyncTask<Void, Void, Boolean>() {
-
-        private var CONN: Connection? = null
-        private var STMNT: Statement? = null
-        private lateinit var RESULT: ResultSet
-
-        override fun onPostExecute(result: Boolean?) {
-
-            try{
-                val byteImage = RESULT.getBytes("adv_profilepic")
-                if (byteImage == null)
-                    loadPlaceholder()
-                else
-                    loadProfilePic(byteImage)
-                profilePicLoading.visibility = View.INVISIBLE
-
-                CONN?.close()
-
-            }catch(ex: Exception){
-                ex.printStackTrace()
-            }
-
-        }
-
-        override fun doInBackground(vararg p0: Void?): Boolean {
-            try {
-                CONN = DatabaseConnection().createConnection()
-
-                val qry = "SELECT adv_profilepic FROM adventurers WHERE adv_email = '${MainActivity.adventurer?.advEmail}'"
-
-                STMNT = CONN!!.createStatement()
-                RESULT = STMNT!!.executeQuery(qry)
-
-                return RESULT.next()
-
-            } catch (ex: SQLException) {
-                ex.printStackTrace()
-                return false
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                return false
-            }
-        }
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            profilePicLoading.visibility = View.VISIBLE
         }
     }
 }
