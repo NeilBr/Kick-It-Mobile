@@ -1,18 +1,24 @@
 package com.eit.kickit.fragments
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eit.kickit.R
 import com.eit.kickit.adapters.BucketLists_Adapter
+import com.eit.kickit.database.Database
 import com.eit.kickit.models.BucketList
 import kotlinx.android.synthetic.main.fragment_bucket_lists.*
+import java.sql.ResultSet
 
 class BucketListFragment : Fragment() {
-    private val temp : ArrayList<BucketList> = ArrayList()
+    private var temp : ArrayList<BucketList> = ArrayList()
+    private var curBucketLists : ArrayList<BucketList> = ArrayList()
+    private var loaded : Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return LayoutInflater.from(container?.context).inflate(R.layout.fragment_bucket_lists, container, false)
@@ -20,21 +26,51 @@ class BucketListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val c1 = BucketList(0, "Beginner","The Starter List for any adveturer", 0)
-        val c2 = BucketList(1, "Intermediate", "For adventurers wanting a challenge", 500)
-        val c3 = BucketList(2, "Student", "Just Student struggles", 750)
-        val c4 = BucketList(3, "Exotic", "For those who want a taste of strange", 1000)
-        val c5 = BucketList(4, "Fitness" ,"Let's hit that swol grind", 250)
-        val c6 = BucketList(5, "Lazy", "For the more relaxed", 120)
+        /*
+        var c1 = BucketList(0, "Beginner","The Starter List for any adveturer", 0)
+        var c2 = BucketList(1, "Intermediate", "For adventurers wanting a challenge", 500)
+        var c3 = BucketList(2, "Student", "Just Student struggles", 750)
+        var c4 = BucketList(3, "Exotic", "For those who want a taste of strange", 1000)
+        var c5 = BucketList(4, "Fitness" ,"Let's hit that swol grind", 250)
+        var c6 = BucketList(5, "Lazy", "For the more relaxed", 120)
+*/
+        loadBucketLists()
+    }
 
-        temp.add(c1)
-        temp.add(c2)
-        temp.add(c3)
-        temp.add(c4)
-        temp.add(c5)
-        temp.add(c6)
+    private fun loadBucketLists()
+    {
+        val query = "SELECT * FROM bucketlists"
 
+        progressBarBucketList.visibility = View.VISIBLE
+
+        Database().runQuery(query, true)
+        {
+            result -> getBucketLists(result)
+        }
+    }
+
+    private fun getBucketLists(result : Any)
+    {
+        val resultSet: ResultSet = result as ResultSet
+
+        if (resultSet.next())
+        {
+            var bucketListItem = BucketList(
+                resultSet.getInt("bl_id"),
+                resultSet.getString("bl_name"),
+                resultSet.getString("bl_description"),
+                resultSet.getInt("bl_reqPoints")
+            )
+            curBucketLists.add(bucketListItem)
+            loaded = true
+            progressBarBucketList.visibility = View.INVISIBLE
+        }
+        setAdapters()
+    }
+
+    private fun setAdapters()
+    {
         rvBucketLists.layoutManager = LinearLayoutManager(activity)
-        rvBucketLists.adapter = BucketLists_Adapter(temp)
+        rvBucketLists.adapter = BucketLists_Adapter(curBucketLists)
     }
 }

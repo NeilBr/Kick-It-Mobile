@@ -227,6 +227,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 return RESULT.next()
 
+
+
             } catch (ex: SQLException) {
                 ex.printStackTrace()
                 return false
