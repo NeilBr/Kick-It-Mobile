@@ -23,27 +23,39 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerV
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.blName.text = challenges.get(position).cName
-        holder.blDescr.text = challenges.get(position).cDescription
+        holder.lblName.text = challenges.get(position).cName
+        holder.lblDescr.text = challenges.get(position).cDescription
+        holder.txtCID = challenges.get(position).cID
+        holder.txtName = challenges.get(position).cName
         holder.txtDescr = challenges.get(position).cDescription
         holder.txtPoints = challenges.get(position).cPoints
         holder.txtPrice = challenges.get(position).cPrice
+        holder.txtStatus = challenges.get(position).cStatus
+        holder.txtBlID = challenges.get(position).blID
     }
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
-        val blName : TextView = itemView.findViewById(R.id.titleText)
-        val blDescr : TextView = itemView.findViewById(R.id.normalText)
+        val lblName : TextView = itemView.findViewById(R.id.titleText)
+        val lblDescr : TextView = itemView.findViewById(R.id.normalText)
+        var txtCID : Int = 0
+        var txtName : String = ""
         var txtDescr : String = ""
         var txtPrice : Double = 0.00
         var txtPoints : Int = 0
+        var txtStatus : Boolean = false
+        var txtBlID : Int = 0
         init {
             itemView.setOnClickListener {
-               val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
+                val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
                 intent.putExtra("MyChallenge", "View challenge layout")
+                intent.putExtra("cID", txtCID)
+                intent.putExtra("Name", txtName)
                 intent.putExtra("Description", txtDescr)
                 intent.putExtra("Points", txtPoints)
                 intent.putExtra("Price", txtPrice)
-               itemView.context.startActivity(intent)
+                intent.putExtra("Status", txtStatus)
+                intent.putExtra("blID", txtBlID)
+                itemView.context.startActivity(intent)
             }
         }
     }

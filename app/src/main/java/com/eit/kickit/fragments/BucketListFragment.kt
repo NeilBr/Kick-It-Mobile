@@ -53,7 +53,7 @@ class BucketListFragment : Fragment() {
     {
         val resultSet: ResultSet = result as ResultSet
 
-        if (resultSet.next())
+        while (resultSet.next())
         {
             var bucketListItem = BucketList(
                 resultSet.getInt("bl_id"),

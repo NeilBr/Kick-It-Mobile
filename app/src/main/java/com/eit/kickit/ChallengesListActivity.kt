@@ -2,34 +2,30 @@ package com.eit.kickit
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eit.kickit.adapters.Challenge_Adapter
-import com.eit.kickit.R
 import com.eit.kickit.database.Database
-import com.eit.kickit.models.BucketList
 import com.eit.kickit.models.Challenge
 import kotlinx.android.synthetic.main.activity_challenges.*
-import kotlinx.android.synthetic.main.fragment_bucket_lists.*
-import kotlinx.android.synthetic.main.recycler_view_item.view.*
 import java.sql.ResultSet
-import java.util.concurrent.ConcurrentHashMap
 
 class ChallengesListActivity : AppCompatActivity() {
 
-    private var bucketlists : ArrayList<BucketList> = ArrayList()
+  //  private var bucketlists : ArrayList<BucketList> = ArrayList()
     private var blID : Int = -1
+    private var blName : String = ""
     private val temp : ArrayList<Challenge> = ArrayList()
     private val curChallenges : ArrayList<Challenge> = ArrayList()
-    private var loaded : Boolean = false
+   // private var loaded : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_challenges)
 
-        bucketlists = getIntent().getParcelableArrayListExtra("BucketLists");
+      //  bucketlists = getIntent().getParcelableArrayListExtra("BucketLists");
         blID = getIntent().getIntExtra("ID", 0)
+        blName = getIntent().getStringExtra("Name")
 /*
         val c1 = Challenge(1, "Walk 5km", "Take a stroll", 1, 0.00, false, 0)
         val c2 = Challenge(2, "Waltz backwards", "Dance tings innit", 50, 0.00, false, 1)
@@ -40,6 +36,7 @@ class ChallengesListActivity : AppCompatActivity() {
         val c7 = Challenge(7, "Run 15km", "You wanna be fit?", 100, 0.00, false, 4)
         val c8 = Challenge(8, "Ignore Assignments", "Just accept the laziness", 275, 0.00, false, 5)
 */
+        lbl_curBL.setText(blName)
         loadChallenges()
     }
 
@@ -59,7 +56,7 @@ class ChallengesListActivity : AppCompatActivity() {
     {
         val resultSet: ResultSet = result as ResultSet
         var status : Boolean = false
-        if (resultSet.next())
+        while (resultSet.next())
         {
             if (resultSet.getInt("c_status") == 1)
             {
@@ -75,7 +72,7 @@ class ChallengesListActivity : AppCompatActivity() {
                 resultSet.getInt("bl_id")
             )
             temp.add(challengeItem)
-            loaded = true
+          //  loaded = true
             progressBarChallenges.visibility = View.INVISIBLE
         }
         loadRelevantChallenges()
