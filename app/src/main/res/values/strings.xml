@@ -56,6 +56,15 @@
     <string name="LOAD_TYPE">load_type</string>
     <string name="LOAD_CREATE_PROFILE">create_profile</string>
     <string name="LOAD_EDIT_PROFILE">edit_profile</string>
+    
+    <!--Suggest Challenge-->
+    <string name="suggest_challenge">Please send us your idea of a new challenge for your fellow adventurers to complete!</string>
+    <string name="suggested_bucketlist">Which bucketlist do you think your challenge is most suited for?</string>
+    <string name="challenge_name">Challenge Name</string>
+    <string name="challenge_description">Short description</string>
+    <string name="challenge_price">Suggested cost</string>
+    <string name="challenge_points">Suggested points</string>
+    <string name="suggest_button">Suggest Challenge</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
