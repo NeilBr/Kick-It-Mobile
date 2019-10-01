@@ -147,9 +147,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             R.id.nav_bucket_lists -> {
                 loadFragment(frag = BucketListFragment())
-                //startActivity(Intent(this,BucketListActivity::class.java))
                 toolbar.title = "Home"
-              //  loadFragment(frag = BucketListFragment())
                 toolbar.title = "Bucket Lists"
             }
 
@@ -189,6 +187,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun loadFragment(frag: Fragment){
         val fm = supportFragmentManager.beginTransaction()
+        val advID = adventurer!!.getID()
+        val bundle : Bundle = Bundle()
+        bundle.putInt("advID", advID)
+        frag.arguments = bundle
         fm.replace(R.id.frameLayout, frag)
         fm.commit()
     }

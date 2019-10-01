@@ -15,7 +15,7 @@ import java.sql.ResultSet
 
 class MyBucketListFragment : Fragment() {
 
-    private var blID : Int = -1
+    private var advID : Int = -1
 
     private val temp : ArrayList<Challenge> = ArrayList()
     private val myChallenges : ArrayList<Challenge> = ArrayList()
@@ -32,13 +32,13 @@ class MyBucketListFragment : Fragment() {
         val c3 = Challenge(3,"Clap twice", "Meme Review", 69, 10000.00, false, 2)
 */
 
-        blID = 99
+        advID = arguments!!.getInt("advID")
         loadMyChallenges()
     }
 
     private fun loadMyChallenges()
     {
-        //val query = "SELECT * FROM my_bucketlist"
+
         val query = "SELECT * FROM challenges"
         progressBarMyChallenges.visibility = View.VISIBLE
 
@@ -69,7 +69,7 @@ class MyBucketListFragment : Fragment() {
             temp.add(challengeItem)
         }
 
-        val query = "Select * FROM bucketlist_challenges WHERE bl_id = ${blID}"
+        val query = "Select * FROM bucketlist_challenges WHERE adv_id = ${advID}"
 
         Database().runQuery(query, true)
         {

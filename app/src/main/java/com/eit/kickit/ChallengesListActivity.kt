@@ -18,6 +18,7 @@ class ChallengesListActivity : AppCompatActivity() {
     private var blName : String = ""
     private val temp : ArrayList<Challenge> = ArrayList()
     private val curChallenges : ArrayList<Challenge> = ArrayList()
+    private var advID : Int = -1
    // private var loaded : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +28,7 @@ class ChallengesListActivity : AppCompatActivity() {
       //  bucketlists = getIntent().getParcelableArrayListExtra("BucketLists");
         blID = getIntent().getIntExtra("ID", 0)
         blName = getIntent().getStringExtra("Name")
+        advID = getIntent().getIntExtra("advID", -1)
 /*
         val c1 = Challenge(1, "Walk 5km", "Take a stroll", 1, 0.00, false, 0)
         val c2 = Challenge(2, "Waltz backwards", "Dance tings innit", 50, 0.00, false, 1)
@@ -110,6 +112,6 @@ class ChallengesListActivity : AppCompatActivity() {
     private fun setAdapters()
     {
         rvChallenges.layoutManager = LinearLayoutManager(this)
-        rvChallenges.adapter = Challenge_Adapter(curChallenges)
+        rvChallenges.adapter = Challenge_Adapter(curChallenges, advID, blID)
     }
 }

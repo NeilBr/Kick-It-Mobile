@@ -15,7 +15,7 @@ import com.eit.kickit.models.BucketList
 /**
  * This adapter is for the bucketlists to bind to the layout in bucket list tab
  */
-class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>): RecyclerView.Adapter<BucketLists_Adapter.ViewHolder>() {
+class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>, private val advID : Int): RecyclerView.Adapter<BucketLists_Adapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,6 +32,7 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>): Recyc
         holder.lblReqPnts.text = bucketlists.get(position).blReqPoints.toString()
         holder.blId = bucketlists.get(position).blID
         holder.curName = bucketlists.get(position).blName
+        holder.advID = advID
     }
 
 
@@ -41,6 +42,7 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>): Recyc
         val lblReqPnts : TextView = itemView.findViewById(R.id.normalText)
         var blId : Int = 0
         var curName : String = ""
+        var advID : Int = -1
         init{
             itemView.setOnClickListener {
                // var data:MutableList<BucketList> = ArrayList<BucketList>()
@@ -49,6 +51,7 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>): Recyc
                // intent.putParcelableArrayListExtra("BucketLists", data as java.util.ArrayList<out Parcelable>)
                 intent.putExtra("ID", blId)
                 intent.putExtra("Name", curName)
+                intent.putExtra("advID", advID)
                 itemView.context.startActivity(intent)
             }
         }

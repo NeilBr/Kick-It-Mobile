@@ -8,6 +8,7 @@ import com.eit.kickit.common.FileHandler
 import com.eit.kickit.database.Database
 import kotlinx.android.synthetic.main.activity_view_challenge.*
 import kotlinx.android.synthetic.main.activity_view_my_challenge.*
+import java.sql.ResultSet
 
 class ViewChallengeActivity : AppCompatActivity() {
 
@@ -17,7 +18,9 @@ class ViewChallengeActivity : AppCompatActivity() {
     private var cPoints : Int = -1
     private var cPrice : Double = 0.00
     private var cStatus : Boolean = false
-    private var bl_id : Int = -1
+    private var blID : Int = -1
+    private var advID : Int = -1
+    private var blcID : Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,9 +33,8 @@ class ViewChallengeActivity : AppCompatActivity() {
         cPoints = getIntent().getIntExtra("Points", 0)
         cPrice = getIntent().getDoubleExtra("Price", 0.00)
         cStatus = getIntent().getBooleanExtra("Status", false)
-       // bl_id = getIntent().getIntExtra("blID", 0)
-        bl_id = 99
-
+        blID = getIntent().getIntExtra("blID", -1)
+        advID = getIntent().getIntExtra("advID", -1)
 
         if (layoutV.equals("View my challenge layout"))
         {
@@ -64,13 +66,28 @@ class ViewChallengeActivity : AppCompatActivity() {
 
     fun onAddClick(view : View)
     {
-       // val query = "INSERT INTO my_bucketlist VALUES($cID, '$cName', '$cDesc', $cPoints, $cPrice, $cStatus, $bl_id)"
-        val query = "INSERT INTO bucketlist_challenges VALUES($bl_id, $cID, null)"
         progressBarViewChallenges.visibility = View.VISIBLE
+        val query = "SELECT * FROM bucketlist_challenges"
+        Database().runQuery(query, true)
+        {
+                result -> setBlcID(result)
+        }
+    }
 
+    private fun setBlcID(result: Any)
+    {
+        val resultSet : ResultSet = result as ResultSet
+
+        while (resultSet.next())
+        {
+            blcID++
+        }
+        blcID++
+
+        val query = "INSERT INTO bucketlist_challenges VALUES($blcID, -1, $cID, $advID)"
         Database().runQuery(query, false)
         {
-            result -> postChallenge(result)
+                result -> postChallenge(result)
         }
     }
 
@@ -78,6 +95,7 @@ class ViewChallengeActivity : AppCompatActivity() {
     {
         if (result is String)
         {
+            progressBarViewMyChallenges.visibility = View.INVISIBLE
             Toast.makeText(this,result, Toast.LENGTH_LONG).show()
         }
         else
@@ -103,6 +121,7 @@ class ViewChallengeActivity : AppCompatActivity() {
     {
         if (result is String)
         {
+            progressBarViewMyChallenges.visibility = View.INVISIBLE
             Toast.makeText(this,result, Toast.LENGTH_LONG).show()
         }
         else
@@ -111,4 +130,6 @@ class ViewChallengeActivity : AppCompatActivity() {
             Toast.makeText(this,"Removed to My BucketList", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }

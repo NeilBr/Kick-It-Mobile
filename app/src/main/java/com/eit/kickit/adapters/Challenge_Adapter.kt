@@ -12,7 +12,7 @@ import com.eit.kickit.ViewChallengeActivity
 import com.eit.kickit.R
 import com.eit.kickit.models.Challenge
 
-class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerView.Adapter<Challenge_Adapter.ViewHolder>() {
+class Challenge_Adapter(private val challenges: ArrayList<Challenge>, private var advID : Int, private var blID : Int): RecyclerView.Adapter<Challenge_Adapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view : View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_item, parent, false)
         return ViewHolder(view)
@@ -31,6 +31,8 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerV
         holder.txtPoints = challenges.get(position).cPoints
         holder.txtPrice = challenges.get(position).cPrice
         holder.txtStatus = challenges.get(position).cStatus
+        holder.advID = advID
+        holder.blID = blID
     }
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
@@ -42,6 +44,8 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerV
         var txtPrice : Double = 0.00
         var txtPoints : Int = 0
         var txtStatus : Boolean = false
+        var advID : Int = -1
+        var blID : Int = -1
         init {
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
@@ -52,6 +56,8 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerV
                 intent.putExtra("Points", txtPoints)
                 intent.putExtra("Price", txtPrice)
                 intent.putExtra("Status", txtStatus)
+                intent.putExtra("advID", advID)
+                intent.putExtra("blID", blID)
                 itemView.context.startActivity(intent)
             }
         }

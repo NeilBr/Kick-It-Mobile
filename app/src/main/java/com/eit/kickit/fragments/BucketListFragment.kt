@@ -18,6 +18,7 @@ import java.sql.ResultSet
 class BucketListFragment : Fragment() {
     private var curBucketLists : ArrayList<BucketList> = ArrayList()
     private var loaded : Boolean = false
+    private var advID : Int = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return LayoutInflater.from(container?.context).inflate(R.layout.fragment_bucket_lists, container, false)
@@ -33,6 +34,7 @@ class BucketListFragment : Fragment() {
         var c5 = BucketList(4, "Fitness" ,"Let's hit that swol grind", 250)
         var c6 = BucketList(5, "Lazy", "For the more relaxed", 120)
 */
+        advID = arguments!!.getInt("advID")
         loadBucketLists()
     }
 
@@ -70,6 +72,6 @@ class BucketListFragment : Fragment() {
     private fun setAdapters()
     {
         rvBucketLists.layoutManager = LinearLayoutManager(activity)
-        rvBucketLists.adapter = BucketLists_Adapter(curBucketLists)
+        rvBucketLists.adapter = BucketLists_Adapter(curBucketLists, advID)
     }
 }
