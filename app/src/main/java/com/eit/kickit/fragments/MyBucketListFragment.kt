@@ -15,6 +15,9 @@ import java.sql.ResultSet
 
 class MyBucketListFragment : Fragment() {
 
+    private var blID : Int = -1
+
+    private val temp : ArrayList<Challenge> = ArrayList()
     private val myChallenges : ArrayList<Challenge> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -29,13 +32,14 @@ class MyBucketListFragment : Fragment() {
         val c3 = Challenge(3,"Clap twice", "Meme Review", 69, 10000.00, false, 2)
 */
 
+        blID = 99
         loadMyChallenges()
     }
 
     private fun loadMyChallenges()
     {
-        val query = "SELECT * FROM my_bucketlist"
-
+        //val query = "SELECT * FROM my_bucketlist"
+        val query = "SELECT * FROM challenges"
         progressBarMyChallenges.visibility = View.VISIBLE
 
         Database().runQuery(query, true)
@@ -60,12 +64,39 @@ class MyBucketListFragment : Fragment() {
                 resultSet.getString("c_description"),
                 resultSet.getInt("c_points"),
                 resultSet.getDouble("c_price"),
-                status,
-                resultSet.getInt("bl_id")
+                status
             )
-            myChallenges.add(challengeItem)
-            progressBarMyChallenges.visibility = View.INVISIBLE
+            temp.add(challengeItem)
         }
+
+        val query = "Select * FROM bucketlist_challenges WHERE bl_id = ${blID}"
+
+        Database().runQuery(query, true)
+        {
+                result -> loadMyRelevantChallenges(result)
+        }
+    }
+
+    private fun loadMyRelevantChallenges(result: Any)
+    {
+        val resultSet: ResultSet = result as ResultSet
+        while (resultSet.next())
+        {
+            var size : Int = temp.size
+            var pos : Int = 0
+            while (size != 0)
+            {
+                val cur = temp.get(pos)
+                val curID = resultSet.getInt("c_id")
+                if (cur.cID == curID)
+                {
+                    myChallenges.add(cur)
+                }
+                pos++
+                size--
+            }
+        }
+        progressBarMyChallenges.visibility = View.INVISIBLE
         setAdapters()
     }
 

@@ -2,6 +2,7 @@ package com.eit.kickit
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eit.kickit.adapters.Challenge_Adapter
@@ -68,29 +69,43 @@ class ChallengesListActivity : AppCompatActivity() {
                 resultSet.getString("c_description"),
                 resultSet.getInt("c_points"),
                 resultSet.getDouble("c_price"),
-                status,
-                resultSet.getInt("bl_id")
+                status
             )
             temp.add(challengeItem)
           //  loaded = true
-            progressBarChallenges.visibility = View.INVISIBLE
         }
-        loadRelevantChallenges()
+        val query = "Select * FROM bucketlist_challenges WHERE bl_id = ${blID}"
+
+        Database().runQuery(query, true)
+        {
+                result -> loadRelevantChallenges(result)
+        }
+
+    }
+
+    private fun loadRelevantChallenges(result : Any)
+    {
+        val resultSet: ResultSet = result as ResultSet
+        while (resultSet.next())
+        {
+            var size : Int = temp.size
+            var pos : Int = 0
+            while (size != 0)
+            {
+                val cur = temp.get(pos)
+                val curID = resultSet.getInt("c_id")
+                if (cur.cID == curID)
+                {
+                    curChallenges.add(cur)
+                }
+                pos++
+                size--
+            }
+        }
+        progressBarChallenges.visibility = View.INVISIBLE
         setAdapters()
     }
 
-    private fun loadRelevantChallenges()
-    {
-        while (temp.size != 0)
-        {
-            val cur = temp.get(0)
-            if (cur.blID == blID)
-            {
-                curChallenges.add(cur)
-            }
-            temp.removeAt(0)
-        }
-    }
 
     private fun setAdapters()
     {

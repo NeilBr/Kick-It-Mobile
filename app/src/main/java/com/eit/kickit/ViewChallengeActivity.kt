@@ -30,7 +30,8 @@ class ViewChallengeActivity : AppCompatActivity() {
         cPoints = getIntent().getIntExtra("Points", 0)
         cPrice = getIntent().getDoubleExtra("Price", 0.00)
         cStatus = getIntent().getBooleanExtra("Status", false)
-        bl_id = getIntent().getIntExtra("blID", 0)
+       // bl_id = getIntent().getIntExtra("blID", 0)
+        bl_id = 99
 
 
         if (layoutV.equals("View my challenge layout"))
@@ -63,7 +64,9 @@ class ViewChallengeActivity : AppCompatActivity() {
 
     fun onAddClick(view : View)
     {
-        val query = "INSERT INTO my_bucketlist VALUES($cID, '$cName', '$cDesc', $cPoints, $cPrice, $cStatus, $bl_id)"
+       // val query = "INSERT INTO my_bucketlist VALUES($cID, '$cName', '$cDesc', $cPoints, $cPrice, $cStatus, $bl_id)"
+        val query = "INSERT INTO bucketlist_challenges VALUES($bl_id, $cID, null)"
+        progressBarViewChallenges.visibility = View.VISIBLE
 
         Database().runQuery(query, false)
         {
@@ -79,13 +82,16 @@ class ViewChallengeActivity : AppCompatActivity() {
         }
         else
         {
+            progressBarViewChallenges.visibility = View.INVISIBLE
             Toast.makeText(this,"Added to My BucketList", Toast.LENGTH_SHORT).show()
         }
     }
 
     fun onRemoveClick(view : View)
     {
-        val query = "DELETE FROM my_bucketlist WHERE c_id = $cID"
+       // val query = "DELETE FROM my_bucketlist WHERE c_id = $cID"
+        val query = "DELETE FROM bucketlist_challenges WHERE c_id = $cID"
+        progressBarViewMyChallenges.visibility = View.VISIBLE
 
         Database().runQuery(query, false)
         {
@@ -101,6 +107,7 @@ class ViewChallengeActivity : AppCompatActivity() {
         }
         else
         {
+            progressBarViewMyChallenges.visibility = View.INVISIBLE
             Toast.makeText(this,"Removed to My BucketList", Toast.LENGTH_SHORT).show()
         }
     }

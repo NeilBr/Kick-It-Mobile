@@ -31,7 +31,6 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
         holder.txtPoints = mybucketlist.get(position).cPoints
         holder.txtPrice = mybucketlist.get(position).cPrice
         holder.txtStatus = mybucketlist.get(position).cStatus
-        holder.txtBlID = mybucketlist.get(position).blID
     }
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
@@ -43,7 +42,6 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
         var txtPrice : Double = 0.00
         var txtPoints : Int = 0
         var txtStatus : Boolean = false
-        var txtBlID : Int = 0
         init {
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
@@ -54,7 +52,6 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
                 intent.putExtra("Points", txtPoints)
                 intent.putExtra("Price", txtPrice)
                 intent.putExtra("Status", txtStatus)
-                intent.putExtra("blID", txtBlID)
                 itemView.context.startActivity(intent)
             }
         }

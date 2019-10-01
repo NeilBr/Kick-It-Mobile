@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.fragment_bucket_lists.*
 import java.sql.ResultSet
 
 class BucketListFragment : Fragment() {
-    private var temp : ArrayList<BucketList> = ArrayList()
     private var curBucketLists : ArrayList<BucketList> = ArrayList()
     private var loaded : Boolean = false
 

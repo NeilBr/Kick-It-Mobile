@@ -12,8 +12,7 @@ data class Challenge(
     var cDescription : String,
     var cPoints : Int,
     var cPrice : Double,
-    var cStatus : Boolean,
-    var blID : Int
+    var cStatus : Boolean
 )
 
     : Parcelable {
@@ -23,18 +22,9 @@ data class Challenge(
         parcel.readString().toString(),
         parcel.readInt(),
         parcel.readDouble(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readInt()
-    ) {
-    }
+        parcel.readByte() != 0.toByte()
+    )
 
-    public fun setID(id: Int){
-        cID = id
-    }
-
-    public fun getID(): Int{
-        return cID
-    }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(cID)
@@ -43,7 +33,6 @@ data class Challenge(
         parcel.writeInt(cPoints)
         parcel.writeDouble(cPrice)
         parcel.writeByte(if (cStatus) 1 else 0)
-        parcel.writeInt(blID)
     }
 
     override fun describeContents(): Int {

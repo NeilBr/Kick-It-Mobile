@@ -1,6 +1,5 @@
 package com.eit.kickit.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +25,7 @@ class SuggestChallengeFragment : Fragment(){
     private var scDesc : String = ""
     private var scPoints : Int = 0
     private var scPrice : Double = 0.00
+    private var scStatus : Int = 0
     private var scBucket : String = ""
 
     private val bucketlists : ArrayList<String> = ArrayList()
@@ -84,7 +84,7 @@ class SuggestChallengeFragment : Fragment(){
 
     private fun suggestChallenge()
     {
-        val query = "SELECT * FROM suggested_challenges"
+        val query = "SELECT * FROM challenges"
 
         Database().runQuery(query, true)
         {
@@ -101,7 +101,7 @@ class SuggestChallengeFragment : Fragment(){
         {
             scID++
         }
-
+        scID++
         progressBarSuggest.visibility = View.VISIBLE
         postSuggestion()
     }
@@ -111,9 +111,10 @@ class SuggestChallengeFragment : Fragment(){
         scName = txtName!!.text.toString()
         scDesc = txtDesc!!.text.toString()
         scPoints = Integer.parseInt(txtPoints!!.text.toString())
+        scStatus = 0
         //scPrice =
 
-        val query = "INSERT INTO suggested_challenges VALUES($scID,'$scName','$scDesc',$scPoints,$scPrice,'$scBucket')"
+        val query = "INSERT INTO challenges VALUES($scID,'$scName','$scDesc',$scPoints,$scPrice,$scStatus)"
 
         Database().runQuery(query, false)
         {

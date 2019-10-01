@@ -47,7 +47,6 @@
             app:layout_constraintStart_toStartOf="@+id/textView9" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.0"/>
     <TextView
-            android:text="420"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtPointsMy" app:layout_constraintStart_toStartOf="@+id/txtDescrMy"
@@ -60,11 +59,18 @@
             android:id="@+id/textView13" app:layout_constraintStart_toStartOf="@+id/textView11"
             app:layout_constraintTop_toBottomOf="@+id/txtPointsMy" android:layout_marginTop="24dp"/>
     <TextView
-            android:text="R60.00"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtPriceMy"
             app:layout_constraintStart_toStartOf="@+id/txtPointsMy"
             app:layout_constraintBaseline_toBaselineOf="@+id/textView13" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.0"/>
+    <ProgressBar
+            android:id="@+id/progressBarViewMyChallenges"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@+id/txtPriceMy" tools:layout_editor_absoluteX="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
