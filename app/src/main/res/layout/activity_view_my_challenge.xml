@@ -18,7 +18,7 @@
             android:text="Challenge name here"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView3" android:textStyle="bold"
+            android:id="@+id/txtNameMy" android:textStyle="bold"
             android:textSize="24sp" android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="32dp"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -27,14 +27,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView9" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" app:layout_constraintTop_toBottomOf="@+id/textView3"
+            android:layout_marginStart="8dp" app:layout_constraintTop_toBottomOf="@+id/txtNameMy"
             android:layout_marginTop="24dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintHorizontal_bias="0.024"/>
     <TextView
             android:text="Description of the activity goes here and is a wrappy boi"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/txtDescr"
+            android:id="@+id/txtDescrMy"
             app:layout_constraintTop_toBottomOf="@+id/textView9" android:layout_marginTop="16dp"
             app:layout_constraintStart_toEndOf="@+id/textView9" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"/>
@@ -43,14 +43,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/txtDescr" android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/txtDescrMy" android:layout_marginTop="24dp"
             app:layout_constraintStart_toStartOf="@+id/textView9" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.0"/>
     <TextView
-            android:text="420"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/txtPoints" app:layout_constraintStart_toStartOf="@+id/txtDescr"
+            android:id="@+id/txtPointsMy" app:layout_constraintStart_toStartOf="@+id/txtDescrMy"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintHorizontal_bias="0.0" app:layout_constraintBaseline_toBaselineOf="@+id/textView11"/>
     <TextView
@@ -58,13 +57,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView13" app:layout_constraintStart_toStartOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/txtPoints" android:layout_marginTop="24dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/txtPointsMy" android:layout_marginTop="24dp"/>
     <TextView
-            android:text="R60.00"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/txtPrice"
-            app:layout_constraintStart_toStartOf="@+id/txtPoints"
+            android:id="@+id/txtPriceMy"
+            app:layout_constraintStart_toStartOf="@+id/txtPointsMy"
             app:layout_constraintBaseline_toBaselineOf="@+id/textView13" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.0"/>
+    <ProgressBar
+            android:id="@+id/progressBarViewMyChallenges"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@+id/txtPriceMy" tools:layout_editor_absoluteX="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

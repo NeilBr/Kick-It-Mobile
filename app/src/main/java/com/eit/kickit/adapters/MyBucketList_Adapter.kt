@@ -25,24 +25,33 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.blName.text = mybucketlist.get(position).cName
         holder.blDescr.text = mybucketlist.get(position).cDescription
+        holder.txtCID = mybucketlist.get(position).cID
+        holder.txtName = mybucketlist.get(position).cName
         holder.txtDescr = mybucketlist.get(position).cDescription
         holder.txtPoints = mybucketlist.get(position).cPoints
         holder.txtPrice = mybucketlist.get(position).cPrice
+        holder.txtStatus = mybucketlist.get(position).cStatus
     }
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val blName : TextView = itemView.findViewById(R.id.titleText)
         val blDescr : TextView = itemView.findViewById(R.id.normalText)
+        var txtCID : Int = 0
+        var txtName : String = ""
         var txtDescr : String = ""
         var txtPrice : Double = 0.00
         var txtPoints : Int = 0
+        var txtStatus : Boolean = false
         init {
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
                 intent.putExtra("MyChallenge", "View my challenge layout")
+                intent.putExtra("cID", txtCID)
+                intent.putExtra("Name", txtName)
                 intent.putExtra("Description", txtDescr)
                 intent.putExtra("Points", txtPoints)
                 intent.putExtra("Price", txtPrice)
+                intent.putExtra("Status", txtStatus)
                 itemView.context.startActivity(intent)
             }
         }

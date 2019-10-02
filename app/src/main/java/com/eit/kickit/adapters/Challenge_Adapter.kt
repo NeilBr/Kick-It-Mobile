@@ -12,7 +12,7 @@ import com.eit.kickit.ViewChallengeActivity
 import com.eit.kickit.R
 import com.eit.kickit.models.Challenge
 
-class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerView.Adapter<Challenge_Adapter.ViewHolder>() {
+class Challenge_Adapter(private val challenges: ArrayList<Challenge>, private var advID : Int, private var blID : Int): RecyclerView.Adapter<Challenge_Adapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view : View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_item, parent, false)
         return ViewHolder(view)
@@ -23,27 +23,42 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>): RecyclerV
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.blName.text = challenges.get(position).cName
-        holder.blDescr.text = challenges.get(position).cDescription
+        holder.lblName.text = challenges.get(position).cName
+        holder.lblDescr.text = challenges.get(position).cDescription
+        holder.txtCID = challenges.get(position).cID
+        holder.txtName = challenges.get(position).cName
         holder.txtDescr = challenges.get(position).cDescription
         holder.txtPoints = challenges.get(position).cPoints
         holder.txtPrice = challenges.get(position).cPrice
+        holder.txtStatus = challenges.get(position).cStatus
+        holder.advID = advID
+        holder.blID = blID
     }
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
-        val blName : TextView = itemView.findViewById(R.id.titleText)
-        val blDescr : TextView = itemView.findViewById(R.id.normalText)
+        val lblName : TextView = itemView.findViewById(R.id.titleText)
+        val lblDescr : TextView = itemView.findViewById(R.id.normalText)
+        var txtCID : Int = 0
+        var txtName : String = ""
         var txtDescr : String = ""
         var txtPrice : Double = 0.00
         var txtPoints : Int = 0
+        var txtStatus : Boolean = false
+        var advID : Int = -1
+        var blID : Int = -1
         init {
             itemView.setOnClickListener {
-               val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
+                val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
                 intent.putExtra("MyChallenge", "View challenge layout")
+                intent.putExtra("cID", txtCID)
+                intent.putExtra("Name", txtName)
                 intent.putExtra("Description", txtDescr)
                 intent.putExtra("Points", txtPoints)
                 intent.putExtra("Price", txtPrice)
-               itemView.context.startActivity(intent)
+                intent.putExtra("Status", txtStatus)
+                intent.putExtra("advID", advID)
+                intent.putExtra("blID", blID)
+                itemView.context.startActivity(intent)
             }
         }
     }
