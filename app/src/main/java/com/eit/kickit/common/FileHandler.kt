@@ -15,11 +15,18 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.util.IOUtils
+import com.eit.kickit.MainActivity
 import com.eit.kickit.R
+import kotlinx.android.synthetic.main.nav_header_main.view.*
 import java.io.File
 import java.io.FileOutputStream
+import javax.net.ssl.ManagerFactoryParameters
 
 class FileHandler(_context: Context){
+
+    companion object {
+        var downloading = false
+    }
 
     private val credentials = BasicAWSCredentials(ACCESSKEY,  SECRET)
     private val client = AmazonS3Client(credentials)
@@ -34,7 +41,15 @@ class FileHandler(_context: Context){
             .build()
     }
 
-    fun uploadFile(fileUri: Uri?, fileName: String){
+    fun createTransferUtil() : TransferUtility{
+
+        initTransferUtil()
+
+        return transferUtility
+
+    }
+
+    fun uploadFile(fileUri: Uri?, fileName: String, profilePic: Boolean){
 
         initTransferUtil()
 
@@ -54,6 +69,9 @@ class FileHandler(_context: Context){
 
             override fun onStateChanged(id: Int, state: TransferState) {
                 if (TransferState.COMPLETED == state) {
+                    if (profilePic){
+                        MainActivity.adventurer?.setPic(BitmapFactory.decodeFile(file.path))
+                    }
                     Toast.makeText(context, "File Uploaded", Toast.LENGTH_LONG).show()
                 }
             }
@@ -75,9 +93,10 @@ class FileHandler(_context: Context){
         }
     }
 
-    fun downloadFile(fileName: String, imgView: ImageView, loading: ProgressBar) : Bitmap {
-        val tempFile = File.createTempFile(fileName, ".jpg")
+    fun downloadImage(fileName: String, imgView: ImageView, loading: ProgressBar) : Bitmap {
+        downloading = true
 
+        val tempFile = File.createTempFile(fileName, ".jpg")
 
         initTransferUtil()
 
@@ -91,6 +110,7 @@ class FileHandler(_context: Context){
                 if (TransferState.COMPLETED == state) {
                     imgView.setImageBitmap(createBitmap(tempFile))
                     loading.visibility = View.INVISIBLE
+                    downloading = false
                 }
             }
 
@@ -103,9 +123,12 @@ class FileHandler(_context: Context){
 
             override fun onError(id: Int, ex: Exception) {
                 Toast.makeText(context, "Downloading File Failed", Toast.LENGTH_SHORT).show()
+                downloading = false
                 ex.printStackTrace()
             }
         })
+
+
 
         return if (TransferState.COMPLETED == downloadObserver.state) {
             createBitmap(tempFile)

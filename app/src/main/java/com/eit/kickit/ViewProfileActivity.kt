@@ -29,7 +29,7 @@ class ViewProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_profile)
         loadDetails()
-        profilePicLoading.visibility = View.VISIBLE
+        //profilePicLoading.visibility = View.VISIBLE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -54,28 +54,7 @@ class ViewProfileActivity : AppCompatActivity() {
 
         loadCompletedChallenges()
 
-        if(MainActivity.adventurer?.getPic() != null){
-            profilePicture.setImageBitmap(MainActivity.adventurer?.getPic())
-            profilePicLoading.visibility = View.INVISIBLE
-        }
-        else{
-            val bitmap = FileHandler(this).downloadFile(MainActivity.adventurer!!.advFirstName + MainActivity.adventurer!!.advSurname, profilePicture, profilePicLoading)
-        }
-    }
-
-    private fun loadProfilePic(imageBytes: ByteArray){
-        var byteSize = imageBytes.size
-        val res = resources
-        val src = BitmapFactory.decodeByteArray(imageBytes, 0, byteSize)
-        val dr = RoundedBitmapDrawableFactory.create(res, src)
-        dr.isCircular = true
-        profilePicture.setImageDrawable(dr)
-    }
-
-    private fun loadPlaceholder(){
-        val res = resources
-        val src = BitmapFactory.decodeResource(res, R.drawable.placeholder_image)
-        val dr = RoundedBitmapDrawableFactory.create(res, src)
+        val dr = RoundedBitmapDrawableFactory.create(resources, MainActivity.adventurer?.getPic())
         dr.isCircular = true
         profilePicture.setImageDrawable(dr)
     }

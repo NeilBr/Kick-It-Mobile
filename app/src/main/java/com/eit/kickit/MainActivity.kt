@@ -2,8 +2,8 @@ package com.eit.kickit
 
 import android.content.Intent
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,16 +18,16 @@ import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.fragment.app.Fragment
 import com.amazonaws.mobile.client.AWSMobileClient
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.eit.kickit.common.FileHandler
+import com.eit.kickit.common.S3LINK
 import com.eit.kickit.fragments.*
-import com.eit.kickit.models.Challenge
-import com.eit.kickit.database.DatabaseConnection
 import com.eit.kickit.models.Adventurer
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
-import java.sql.Connection
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Statement
+import kotlinx.android.synthetic.main.nav_header_main.view.*
+import kotlinx.android.synthetic.main.splash_screen.*
+import java.io.File
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -35,13 +35,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
 
         var adventurer: Adventurer? = null
+        lateinit var header: View
 
     }
+
+    lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.splash_screen)
+
+        sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
+        val tempPref = sharedPref.getString("adventurer", "null")
+
+        AWSMobileClient.getInstance().initialize(this).execute()
+
+        if (tempPref != "null"){
+            loadAdventurer(tempPref)
+
+            if(adventurer?.getPicLink() == " placeholder"){
+                loadMainView()
+
+                val src = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
+                adventurer?.setPic(src)
+
+                loadHeader()
+
+                Toast.makeText(this@MainActivity, "Welcome ${adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
+                loadFragment(frag = HomeFragment())
+            }
+            else{
+                loadData()
+            }
+        }
+        else{
+            loadMainView()
+            val src = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
+            val dr = RoundedBitmapDrawableFactory.create(resources, src)
+            dr.isCircular = true
+
+            header.headerImage.setImageDrawable(dr)
+
+            loadFragment(frag = LoginFragment())
+        }
+    }
+
+    private fun loadMainView(){
         setContentView(R.layout.activity_main)
+
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -57,20 +99,65 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navView.setNavigationItemSelectedListener(this)
 
-        val sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
-        val tempPref = sharedPref.getString("adventurer", "null")
+        header = navView.getHeaderView(0)
+    }
 
-        AWSMobileClient.getInstance().initialize(this).execute()
+    private fun loadData(){
 
-        if (tempPref != "null"){
-            loadAdventurer(tempPref)
-            Toast.makeText(this, "Welcome ${adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
-            loadFragment(frag = HomeFragment())
-            getProfilePic().execute()
-        }
-        else{
-            loadFragment(frag = LoginFragment())
-        }
+        val fileName = adventurer?.getPicLink()
+
+        val transferUtility = FileHandler(this).createTransferUtil()
+
+        val tempFile = File.createTempFile(fileName, ".jpg")
+
+        val downloadObserver = transferUtility.download(S3LINK + fileName, tempFile)
+
+        downloadObserver.setTransferListener(object : TransferListener {
+
+            override fun onStateChanged(id: Int, state: TransferState) {
+                if (TransferState.COMPLETED == state) {
+                    loadMainView()
+
+                    val bitMap = BitmapFactory.decodeFile(tempFile.path)
+                    adventurer?.setPic(bitMap)
+
+                    loadHeader()
+
+                    Toast.makeText(this@MainActivity, "Welcome ${adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
+                    loadFragment(frag = HomeFragment())
+                }
+            }
+
+            override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                val percentDonef = bytesCurrent.toFloat() / bytesTotal.toFloat() * 100
+                val percentDone = percentDonef.toInt()
+                splashBar.progress = percentDone
+                println(percentDone)
+            }
+
+            override fun onError(id: Int, ex: Exception) {
+                loadMainView()
+
+                val editor = sharedPref.edit()
+                editor.putString("adventurer", "null")
+                editor.commit()
+
+                loadFragment(frag = LoginFragment())
+
+                Toast.makeText(this@MainActivity, "Downloading File Failed", Toast.LENGTH_SHORT).show()
+                ex.printStackTrace()
+            }
+        })
+
+    }
+
+    fun loadHeader(){
+
+        val dr = RoundedBitmapDrawableFactory.create(resources, adventurer?.getPic())
+        dr.isCircular = true
+
+        header.headerImage.setImageDrawable(dr)
+        header.headerName.text = adventurer?.advFirstName
 
     }
 
@@ -94,16 +181,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun loadAdventurer (advString: String?) {
+    private fun loadAdventurer (advString: String?) {
         val props = advString?.split(',')
 
         adventurer = Adventurer(props!![1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean())
         adventurer?.setID(Integer.parseInt(props[0]))
+        adventurer?.setPicLink(props[7])
     }
 
     fun logoutClicked(view: View){
 
-        val sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
+        sharedPref = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
         val tempPref = sharedPref.getString("adventurer", "null")
 
         if (tempPref != "null"){
@@ -191,70 +279,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fm = supportFragmentManager.beginTransaction()
         fm.replace(R.id.frameLayout, frag)
         fm.commit()
-    }
-
-    inner class getProfilePic : AsyncTask<Void, Void, Boolean>() {
-
-        private var CONN: Connection? = null
-        private var STMNT: Statement? = null
-        private lateinit var RESULT: ResultSet
-
-        override fun onPostExecute(result: Boolean?) {
-
-            try{
-                val byteImage = RESULT.getBytes("adv_profilepic")
-                headerName.text = "${adventurer?.advFirstName} ${adventurer?.advSurname}"
-                if (byteImage == null)
-                    loadPlaceholder()
-                else
-                    loadProfilePic(byteImage)
-                CONN?.close()
-
-            }catch(ex: Exception){
-                ex.printStackTrace()
-            }
-
-        }
-
-        override fun doInBackground(vararg p0: Void?): Boolean {
-            try {
-                CONN = DatabaseConnection().createConnection()
-
-                val qry = "SELECT adv_profilepic FROM adventurers WHERE adv_email = '${adventurer?.advEmail}'"
-
-                STMNT = CONN!!.createStatement()
-                RESULT = STMNT!!.executeQuery(qry)
-
-                return RESULT.next()
-
-            } catch (ex: SQLException) {
-                ex.printStackTrace()
-                return false
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                return false
-            }
-        }
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-        }
-    }
-
-    private fun loadProfilePic(imageBytes: ByteArray){
-        var byteSize = imageBytes.size
-        val res = resources
-        val src = BitmapFactory.decodeByteArray(imageBytes, 0, byteSize)
-        val dr = RoundedBitmapDrawableFactory.create(res, src)
-        dr.isCircular = true
-        headerImage.setImageDrawable(dr)
-    }
-
-    private fun loadPlaceholder(){
-        val res = resources
-        val src = BitmapFactory.decodeResource(res, R.drawable.placeholder_image)
-        val dr = RoundedBitmapDrawableFactory.create(res, src)
-        dr.isCircular = true
-        headerImage.setImageDrawable(dr)
     }
 }

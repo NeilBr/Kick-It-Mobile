@@ -18,6 +18,7 @@ import com.eit.kickit.common.Validator
 import com.eit.kickit.database.Database
 import com.eit.kickit.database.DatabaseConnection
 import kotlinx.android.synthetic.main.activity_create_profile.*
+import kotlinx.android.synthetic.main.nav_header_main.view.*
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.security.MessageDigest
@@ -33,6 +34,7 @@ class CreateProfileActivity : AppCompatActivity() {
     var pword = ""
     var rtpword = ""
     var newPic: Boolean = false
+    var profilePic = ""
     private var uri: Uri? = Uri.EMPTY
     lateinit var pic: InputStream
 
@@ -100,7 +102,8 @@ class CreateProfileActivity : AppCompatActivity() {
             progressBar.visibility = View.INVISIBLE
         }
         else{
-            FileHandler(this).uploadFile(uri, firstname + surname)
+            if(newPic)
+                FileHandler(this).uploadFile(uri, firstname + surname, false)
             em_textInput.helperText = ""
             Toast.makeText(this@CreateProfileActivity, "Welcome to KickIT", Toast.LENGTH_SHORT).show()
             progressBar.visibility = View.INVISIBLE
@@ -161,7 +164,6 @@ class CreateProfileActivity : AppCompatActivity() {
     @SuppressLint("ApplySharedPref")
     private fun updateAdventurer(result: Any){
 
-
         if(result is String){
             Toast.makeText(this@CreateProfileActivity, result, Toast.LENGTH_LONG).show()
             progressBar.visibility = View.INVISIBLE
@@ -170,13 +172,17 @@ class CreateProfileActivity : AppCompatActivity() {
             em_textInput.helperText = ""
             Toast.makeText(this@CreateProfileActivity, "Profile Updated!", Toast.LENGTH_SHORT).show()
 
-            val advString = "${MainActivity.adventurer?.getID()},$firstname,$surname,$Email,$phone,${MainActivity.adventurer?.advPoints},${MainActivity.adventurer?.advAdmin},${firstname + surname}"
+            val advString = "${MainActivity.adventurer?.getID()},$firstname,$surname,$Email,$phone,${MainActivity.adventurer?.advPoints},${MainActivity.adventurer?.advAdmin},$profilePic"
             val sharedPreferences = getSharedPreferences(getString(R.string.login_pref), Context.MODE_PRIVATE)
             val editor = sharedPreferences?.edit()
             editor?.putString("adventurer", advString)
             editor?.commit()
 
-            FileHandler(this).uploadFile(uri, firstname + surname)
+            if(newPic){
+                FileHandler(this).uploadFile(uri, firstname + surname, true)
+            }
+
+            MainActivity.header.headerName.text = firstname
 
             progressBar.visibility = View.INVISIBLE
 
@@ -238,15 +244,21 @@ class CreateProfileActivity : AppCompatActivity() {
     }
 
     private fun buildQuery(create: Boolean) : String{
-        var profilePic = "placeholder"
-
-        if(newPic)
-            profilePic = firstname + surname
+        profilePic = if(newPic)
+            firstname + surname
+        else{
+            if(!create){
+                MainActivity.adventurer!!.getPicLink()
+            } else{
+                "placeholder"
+            }
+        }
 
         return when(create){
             true -> "INSERT INTO `adventurers` (`adv_firstName`,`adv_surname`,`adv_email`,`adv_telephone`,`adv_password`,`adv_profilepic`)" +
                     "VALUES('$firstname','$surname','$Email','$phone','$pword','$profilePic')"
             false -> {
+
                 if(pword == "")
                     return "UPDATE `adventurers` SET " +
                             "adv_firstName = '$firstname'," +
