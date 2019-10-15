@@ -169,6 +169,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         else{
             try{
                 val intent = Intent(this, ViewProfileActivity::class.java)
+                intent.putExtra("display", 0)
                 startActivity(intent)
 
                 val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -275,7 +276,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun loadFragment(frag: Fragment){
         val fm = supportFragmentManager.beginTransaction()
-        val advID = adventurer!!.getID()
+        val advID = if(adventurer != null){
+            adventurer!!.getID()
+        } else{
+            0
+        }
         val bundle : Bundle = Bundle()
         bundle.putInt("advID", advID)
         frag.arguments = bundle

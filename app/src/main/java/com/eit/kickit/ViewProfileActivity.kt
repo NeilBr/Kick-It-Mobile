@@ -11,11 +11,19 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.eit.kickit.common.FileHandler
+import com.eit.kickit.common.S3LINK
+import com.eit.kickit.database.Database
 import com.eit.kickit.database.DatabaseConnection
 import com.eit.kickit.fragments.HomeFragment
+import com.eit.kickit.fragments.LoginFragment
+import com.eit.kickit.models.Adventurer
 import kotlinx.android.synthetic.main.activity_view_profile.*
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.splash_screen.*
+import java.io.File
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -24,12 +32,23 @@ import java.sql.Statement
 class ViewProfileActivity : AppCompatActivity() {
 
     private val UPDATE_PROFILE = 1001
+    private var userID = 0
+
+    private var displayType = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_profile)
-        loadDetails()
-        //profilePicLoading.visibility = View.VISIBLE
+        viewProfileBar.visibility = View.VISIBLE
+
+        displayType = intent.getIntExtra("display", -1)
+
+        if(displayType == 0)
+            loadDetails()
+        else{
+            val friend = intent.getSerializableExtra("friend") as Adventurer
+            loadFriend(friend)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -48,36 +67,108 @@ class ViewProfileActivity : AppCompatActivity() {
     }
 
     private fun loadDetails(){
+        userID = MainActivity.adventurer!!.getID()
+
         viewEmail.text = MainActivity.adventurer?.advEmail
         viewFirstName.text = MainActivity.adventurer?.advFirstName
         viewSurname.text = MainActivity.adventurer?.advSurname
 
-        loadCompletedChallenges()
+        val query = "SELECT c.c_id, c.c_name, c.c_points " +
+                "FROM adv_challenges_completed AS a " +
+                "INNER JOIN challenges AS c ON a.c_id = c.c_id " +
+                "WHERE a.adv_id = $userID "
+        Database().runQuery(query, true){
+            result -> loadCompletedChallenges(result)
+        }
 
         val dr = RoundedBitmapDrawableFactory.create(resources, MainActivity.adventurer?.getPic())
         dr.isCircular = true
         profilePicture.setImageDrawable(dr)
     }
 
-    private fun loadCompletedChallenges(){
-        //Will include a a get and then will display them!
-        //But for now, DUMMY DATA BOIII
+    private fun loadFriend(friend: Adventurer){
+        btnEditProfile.visibility = View.INVISIBLE
 
-        if (MainActivity.adventurer?.getID() == 1){
+        userID = friend.getID()
 
-            val listItems = arrayOf("Pet a Cat \t\t\t\t 1 point" ,
-                "Attend a lecture \t\t\t\t 20 Points",
-                "Go to bed on time \t\t\t\t 15 Points",
-                "Hike Lady Slipper \t\t\t\t 9 Points",
-                "Binge a Series \t\t\t\t 5 Points",
-                "Study for a test \t\t\t\t 1 Point",
-                "Donate to a charity \t\t\t\t 15 Points",
-                "Visit and old Age Home \t\t\t\t 6 Points",
-                "Run a 5Km \t\t\t\t 10 Points",
-                "Finish the Third year Project \t\t\t\t 50 Points")
+        viewEmail.text = friend.advEmail
+        viewFirstName.text = friend.advFirstName
+        viewSurname.text = friend.advSurname
 
-            val adapter = ArrayAdapter(this , R.layout.dummy_will_delete, listItems)
+        val query = "SELECT c.c_id, c.c_name, c.c_points " +
+                "FROM adv_challenges_completed AS a " +
+                "INNER JOIN challenges AS c ON a.c_id = c.c_id " +
+                "WHERE a.adv_id = $userID "
+        Database().runQuery(query, true){
+                result -> loadCompletedChallenges(result)
+        }
+
+        if(friend.getPicLink() == "placeholder"){
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
+            val dr = RoundedBitmapDrawableFactory.create(resources, bitmap)
+            dr.isCircular = true
+            profilePicture.setImageDrawable(dr)
+        }
+        else{
+
+            friendPicLoad.visibility = View.VISIBLE
+
+            val fileName = friend.getPicLink()
+
+            val transferUtil = FileHandler(this).createTransferUtil()
+
+            val tempFile = File.createTempFile(fileName, ".jpg")
+
+            val downloadObserver = transferUtil.download(S3LINK + fileName, tempFile)
+
+            downloadObserver.setTransferListener(object : TransferListener {
+
+                override fun onStateChanged(id: Int, state: TransferState) {
+                    if (TransferState.COMPLETED == state) {
+                        val bitMap = BitmapFactory.decodeFile(tempFile.path)
+                        val dr = RoundedBitmapDrawableFactory.create(resources, bitMap)
+                        dr.isCircular = true
+                        profilePicture.setImageDrawable(dr)
+
+                        friendPicLoad.visibility = View.INVISIBLE
+                    }
+                }
+
+                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                    val percentDonef = bytesCurrent.toFloat() / bytesTotal.toFloat() * 100
+                    val percentDone = percentDonef.toInt()
+                    println(percentDone)
+                }
+
+                override fun onError(id: Int, ex: Exception) {
+                    ex.printStackTrace()
+                }
+            })
+
+        }
+
+
+    }
+
+    private fun loadCompletedChallenges(result: Any){
+        val itemArray: ArrayList<String> = ArrayList()
+
+        if(result is ResultSet){
+
+            while(result.next()){
+
+                val display = result.getString("c_name") + " \t\t\t " + result.getString("c_points")
+                itemArray.add(display)
+
+            }
+
+            val adapter = ArrayAdapter(this, R.layout.dummy_will_delete, itemArray)
             completed_challenges.adapter = adapter
+            viewProfileBar.visibility = View.INVISIBLE
+
+        }
+        else{
+            println("SOMETHING WENT WRONG --------" + result)
         }
     }
 }
