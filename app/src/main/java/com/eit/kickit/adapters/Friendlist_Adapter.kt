@@ -1,11 +1,13 @@
 package com.eit.kickit.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.eit.kickit.R
+import com.eit.kickit.ViewProfileActivity
 import com.eit.kickit.models.Adventurer
 
 class Friendlist_Adapter(private var friends: ArrayList<Adventurer>) :
@@ -17,7 +19,16 @@ class Friendlist_Adapter(private var friends: ArrayList<Adventurer>) :
             .inflate(R.layout.recycler_view_item,
                 parent,
                 false)
-        return ListViewHolder(view)
+
+        val listHolder = ListViewHolder(view)
+        view.setOnClickListener { view ->
+            val intent = Intent(view.context, ViewProfileActivity::class.java)
+            intent.putExtra("display", 1)
+            intent.putExtra("friend", listHolder.friend)
+            view.context.startActivity(intent)
+        }
+
+        return listHolder
     }
 
     override fun getItemCount(): Int {

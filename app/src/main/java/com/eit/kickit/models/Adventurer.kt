@@ -1,6 +1,7 @@
 package com.eit.kickit.models
 
 import android.graphics.Bitmap
+import java.io.Serializable
 
 data class Adventurer (
     var advFirstName: String,
@@ -9,7 +10,7 @@ data class Adventurer (
     var advTelephone: String,
     var advPoints: Double,
     var advActive: Boolean,
-    var advAdmin: Boolean)
+    var advAdmin: Boolean) : Serializable
 {
     private var avdID: Int = 0
     private var advPicLink = ""
