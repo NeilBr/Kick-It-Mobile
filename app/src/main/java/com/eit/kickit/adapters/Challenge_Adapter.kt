@@ -42,7 +42,7 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>, private va
         var txtName : String = ""
         var txtDescr : String = ""
         var txtPrice : Double = 0.00
-        var txtPoints : Int = 0
+        var txtPoints : Double = 0.00
         var txtStatus : Boolean = false
         var advID : Int = -1
         var blID : Int = -1

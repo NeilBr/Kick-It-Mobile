@@ -41,7 +41,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>, priva
         var txtName : String = ""
         var txtDescr : String = ""
         var txtPrice : Double = 0.00
-        var txtPoints : Int = 0
+        var txtPoints : Double = 0.00
         var txtStatus : Boolean = false
         var advId : Int = -1
         init {

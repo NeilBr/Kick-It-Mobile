@@ -3,9 +3,7 @@ package com.eit.kickit
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.eit.kickit.database.Database
@@ -18,12 +16,12 @@ class ViewChallengeActivity : AppCompatActivity() {
     private var cID : Int = -1
     private var cName : String = ""
     private var cDesc : String = ""
-    private var cPoints : Int = -1
+    private var cPoints : Double = 0.00
     private var cPrice : Double = 0.00
     private var cStatus : Boolean = false
     private var blID : Int = -1
     private var advID : Int = -1
-    private val comradeID : ArrayList<Int> = ArrayList()
+    private var blcID : Int = 0
     private val comradeNames : ArrayList<String> = ArrayList()
 
 
@@ -34,7 +32,7 @@ class ViewChallengeActivity : AppCompatActivity() {
         cID = getIntent().getIntExtra("cID", 0)
         cName = getIntent().getStringExtra("Name")
         cDesc = getIntent().getStringExtra("Description")
-        cPoints = getIntent().getIntExtra("Points", 0)
+        cPoints = getIntent().getDoubleExtra("Points", 0.00)
         cPrice = getIntent().getDoubleExtra("Price", 0.00)
         cStatus = getIntent().getBooleanExtra("Status", false)
         blID = getIntent().getIntExtra("blID", -1)
@@ -61,47 +59,32 @@ class ViewChallengeActivity : AppCompatActivity() {
         txtPriceMy.setText("${cPrice}")
         progressBarViewMyChallenges.visibility = View.VISIBLE
 
-        val query = "SELECT adv_id2 FROM challenge_invites WHERE adv_id1 = $advID AND c_id = $cID"
+        val query = "SELECT concat(a.adv_firstname, ' ', a.adv_surname) As Name FROM adventurers as a INNER JOIN challenge_invites as c ON a.adv_id = c.adv_id2 WHERE c.c_id = $cID AND c.adv_id1 = $advID and c.ci_status = true"
         Database().runQuery(query, true)
         {
-            result -> getComradeIDs(result)
+            result -> loadComrades(result)
         }
-
 
     }
 
-    private fun getComradeIDs(result : Any)
+    private fun loadComrades(result : Any)
     {
         val resultSet : ResultSet = result as ResultSet
-
-        while (resultSet.next())
+        if (result is String)
         {
-            comradeID.add(resultSet.getInt("adv_id2"))
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+            println("-----------------------------------------------> " + result)
+            progressBarViewMyChallenges.visibility = View.INVISIBLE
         }
-
-        for (x in comradeID)
+        else
         {
-            progressBarViewMyChallenges.visibility = View.VISIBLE
-            val query = "SELECT concat(adv_firstName, ' ', adv_surname) AS Name FROM adventurers WHERE adv_id = $x"
-            Database().runQuery(query, true)
+            while (resultSet.next())
             {
-                    result -> getComradeNames(result)
+                comradeNames.add(resultSet.getString("Name"))
             }
+            listComrades.adapter = ArrayAdapter(this, R.layout.spin_item, comradeNames)
+            progressBarViewMyChallenges.visibility = View.INVISIBLE
         }
-
-    }
-
-    private fun getComradeNames(result: Any)
-    {
-        val resultSet : ResultSet = result as ResultSet
-
-        while (resultSet.next())
-        {
-            comradeNames.add(resultSet.getString("Name"))
-        }
-        listComrades.adapter = ArrayAdapter(this, R.layout.spin_item, comradeNames)
-        progressBarViewMyChallenges.visibility = View.INVISIBLE
-
     }
 
     private fun loadChallengeView()
@@ -170,11 +153,28 @@ class ViewChallengeActivity : AppCompatActivity() {
         }
         else if (!completed)
         {
-            val query = "INSERT INTO bucketlist_challenges(bl_id, c_id, adv_id) VALUES(-1, $cID, $advID)"
-            Database().runQuery(query, false)
+            val query = "SELECT * FROM bucketlist_challenges"
+            Database().runQuery(query, true)
             {
-                    result -> postChallenge(result)
+                result -> setBlcID(result)
             }
+        }
+    }
+
+    private fun setBlcID(result: Any)
+    {
+        val resultSet : ResultSet = result as ResultSet
+
+        while (resultSet.next())
+        {
+            blcID++
+        }
+        blcID++
+
+        val query = "INSERT INTO bucketlist_challenges VALUES($blcID, -1, $cID, $advID)"
+        Database().runQuery(query, false)
+        {
+                result -> postChallenge(result)
         }
     }
 
@@ -182,7 +182,7 @@ class ViewChallengeActivity : AppCompatActivity() {
     {
         if (result is String)
         {
-            progressBarViewMyChallenges.visibility = View.INVISIBLE
+            progressBarViewChallenges.visibility = View.INVISIBLE
             Toast.makeText(this,result, Toast.LENGTH_LONG).show()
         }
         else
@@ -236,6 +236,7 @@ class ViewChallengeActivity : AppCompatActivity() {
     {
         val intent : Intent =  Intent(this, InviteComradeActivity::class.java)
         intent.putExtra("advID", advID)
+        intent.putExtra("cID", cID)
         startActivity(intent)
     }
 
@@ -244,7 +245,62 @@ class ViewChallengeActivity : AppCompatActivity() {
         //When a challenge is completed ->  Complete the post
         //                                  In my bucketlist <- remove
 
-        Toast.makeText(this, "Code here", Toast.LENGTH_SHORT).show()
+        //Remove the challenge
+        progressBarViewMyChallenges.visibility = View.VISIBLE
+        val query = "Select blc_id FROM bucketlist_challenges WHERE c_id = $cID AND adv_id = $advID"
+        Database().runQuery(query, true)
+        {
+                result -> getBLCID(result)
+        }
+
+        //Add to completed challenge
+        val query2 = "INSERT INTO adv_challenges_completed(adv_id, c_id) VALUES($advID, $cID)"
+        Database().runQuery(query2, false)
+        {
+            result ->
+            if (result is String)
+            {
+                Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+                progressBarViewMyChallenges.visibility = View.INVISIBLE
+            }
+            else
+            {
+                Toast.makeText(this, "Added to completed challenges", Toast.LENGTH_SHORT).show()
+                progressBarViewMyChallenges.visibility = View.INVISIBLE
+            }
+        }
+
+        //Allocate points and cost to adventurer
+        val query3 = "SELECT adv_totalPoints, adv_TotalSpent FROM adventurers WHERE adv_id = $advID"
+        Database().runQuery(query3, true)
+        {
+            result -> updateProfile(result)
+        }
+    }
+
+    private fun updateProfile(result: Any)
+    {
+        if (result is ResultSet)
+        {
+            if (result.next())
+            {
+                val advTP = result.getDouble("adv_totalPoints") + cPoints
+                val advTS = result.getDouble("adv_TotalSpent") + cPrice
+                val qeury = "UPDATE adventurers SET adv_totalPoints = $advTP, adv_TotalSpent = $advTS WHERE adv_id = $advID"
+                Database().runQuery(qeury, false)
+                {
+                    result ->
+                    if (result is String)
+                    {
+                        Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                    {
+                        Toast.makeText(this, "Points and total spent has been updated", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 
 }

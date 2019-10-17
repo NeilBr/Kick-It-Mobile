@@ -105,6 +105,7 @@
 
     <!-- Invite Comrade page -->
     <string name="btn_invite">Invite</string>
+    <string name="label_invite">Select one of your friends to send an invite to. Once they accept they will be added to your fellow comrades in this challenge!</string>
 
     <!-- Progress Page -->
     <string name="label_progress">Progress</string>

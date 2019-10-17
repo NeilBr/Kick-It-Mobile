@@ -18,9 +18,6 @@ import java.sql.ResultSet
 class ProgressFragment : Fragment() {
 
     private var advID : Int = -1
-   // private var points : Double = 0.00
-   // private var spent : Double = 0.0
-  //  private var goldenBoots : Int = -1
     private var completedChallenges : ArrayList<String> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -31,13 +28,10 @@ class ProgressFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressBarProgress.visibility = View.VISIBLE
+        lbl_totalSpent.visibility = View.INVISIBLE
+        lbl_goldenBoots.visibility = View.INVISIBLE
+        lbl_points.visibility = View.INVISIBLE
         advID = MainActivity.adventurer!!.getID()
-       // points = MainActivity.adventurer!!.advPoints
-       // spent = MainActivity.adventurer!!.advTotalSpent
-       // goldenBoots = MainActivity.adventurer!!.advGoldenBootCount
-       // lbl_points.setText("$points")
-       // lbl_goldenBoots.setText("$goldenBoots")
-       // lbl_totalSpent.setText("$spent")
         loadInfo(view.context)
     }
 
@@ -92,10 +86,14 @@ class ProgressFragment : Fragment() {
                 lbl_points.setText("$points")
                 lbl_goldenBoots.setText("$goldenBoots")
                 lbl_totalSpent.setText("$spent")
+
+                lbl_points.visibility = View.VISIBLE
+                lbl_goldenBoots.visibility = View.VISIBLE
+                lbl_totalSpent.visibility = View.VISIBLE
             }
         } else
         {
-            println("SOMETHING WENT WRONG --------" + result)
+            println("------------------------------------------>" + result)
         }
     }
 }
