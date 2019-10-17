@@ -35,22 +35,37 @@ class BucketListFragment : Fragment() {
         var c6 = BucketList(5, "Lazy", "For the more relaxed", 120)
 */
         advID = arguments!!.getInt("advID")
-        loadBucketLists()
-    }
-
-    private fun loadBucketLists()
-    {
-        val query = "SELECT * FROM bucketlists"
-
         progressBarBucketList.visibility = View.VISIBLE
-
+        val query = "SELECT adv_totalPoints FROM adventurers WHERE adv_id = $advID"
         Database().runQuery(query, true)
         {
-            result -> getBucketLists(result)
+            result -> getPoints(result)
         }
     }
 
-    private fun getBucketLists(result : Any)
+    private fun getPoints(result: Any)
+    {
+        val resultSet: ResultSet = result as ResultSet
+        if (resultSet.next())
+        {
+            val points = resultSet.getDouble("adv_totalPoints")
+            loadBucketLists(points)
+        }
+    }
+
+    private fun loadBucketLists(points : Double)
+    {
+        val query = "SELECT * FROM bucketlists"
+
+
+
+        Database().runQuery(query, true)
+        {
+            result -> getBucketLists(result, points)
+        }
+    }
+
+    private fun getBucketLists(result : Any, points: Double)
     {
         val resultSet: ResultSet = result as ResultSet
 
@@ -66,12 +81,12 @@ class BucketListFragment : Fragment() {
             loaded = true
             progressBarBucketList.visibility = View.INVISIBLE
         }
-        setAdapters()
+        setAdapters(points)
     }
 
-    private fun setAdapters()
+    private fun setAdapters(points: Double)
     {
         rvBucketLists.layoutManager = LinearLayoutManager(activity)
-        rvBucketLists.adapter = BucketLists_Adapter(curBucketLists, advID)
+        rvBucketLists.adapter = BucketLists_Adapter(curBucketLists, advID, points)
     }
 }

@@ -184,8 +184,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun loadAdventurer (advString: String?) {
         val props = advString?.split(',')
-
-        adventurer = Adventurer(props!![1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean())
+//
+        adventurer = Adventurer(props!![1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean(), 0.0,0)
         adventurer?.setID(Integer.parseInt(props[0]))
         adventurer?.setPicLink(props[7])
     }

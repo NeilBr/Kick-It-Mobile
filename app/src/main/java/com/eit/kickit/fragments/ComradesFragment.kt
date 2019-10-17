@@ -34,7 +34,7 @@ class ComradesFragment : Fragment() {
 
         addFriendFab.isEnabled = false
 
-        val query = "SELECT adv_id, adv_firstName, adv_surname, adv_email, adv_telephone, adv_totalPoints, adv_profilepic " +
+        val query = "SELECT adv_id, adv_firstName, adv_surname, adv_email, adv_telephone, adv_totalPoints, adv_profilepic, adv_TotalSpent, adv_GoldenBootCount " +
                 "FROM adventurers AS a INNER JOIN friends AS f ON a.adv_id = f.adv_id2 " +
                 "WHERE f.adv_id1 = ${MainActivity.adventurer?.getID()} "
 
@@ -66,7 +66,9 @@ class ComradesFragment : Fragment() {
                     friendList.getString("adv_telephone"),
                     friendList.getDouble("adv_totalPoints"),
                     advActive = true,
-                    advAdmin = false
+                    advAdmin = false,
+                    advTotalSpent = friendList.getDouble("adv_TotalSpent"),
+                    advGoldenBootCount = friendList.getInt("adv_GoldenBootCount")
                 )
                 friend.setPicLink(friendList.getString("adv_profilepic"))
                 friend.setID(friendList.getInt("adv_id"))
@@ -107,7 +109,7 @@ class ComradesFragment : Fragment() {
             friendListProgress.visibility = View.INVISIBLE
         }
         else{
-            val query = "SELECT adv_id, adv_firstName, adv_surname, adv_email, adv_telephone, adv_totalPoints, adv_profilepic FROM adventurers WHERE adv_email= '$email'"
+            val query = "SELECT adv_id, adv_firstName, adv_surname, adv_email, adv_telephone, adv_totalPoints, adv_profilepic, adv_TotalSpent, adv_GoldenBootCount FROM adventurers WHERE adv_email= '$email'"
 
             searchFab.isEnabled = false
 
@@ -131,7 +133,9 @@ class ComradesFragment : Fragment() {
                     result.getString("adv_telephone"),
                     result.getDouble("adv_totalPoints"),
                     advActive = true,
-                    advAdmin = false
+                    advAdmin = false,
+                    advTotalSpent = result.getDouble("adv_TotalSpent"),
+                    advGoldenBootCount = result.getInt("adv_GoldenBootCount")
                 )
                 friend.setPicLink(result.getString("adv_profilepic"))
                 friend.setID(result.getInt("adv_id"))

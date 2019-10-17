@@ -12,7 +12,7 @@ import com.eit.kickit.R
 import com.eit.kickit.ViewChallengeActivity
 import com.eit.kickit.models.Challenge
 
-class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : RecyclerView.Adapter<MyBucketList_Adapter.ViewHolder>() {
+class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>, private val AdvID : Int) : RecyclerView.Adapter<MyBucketList_Adapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view : View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_item, parent, false)
         return ViewHolder(view)
@@ -31,6 +31,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
         holder.txtPoints = mybucketlist.get(position).cPoints
         holder.txtPrice = mybucketlist.get(position).cPrice
         holder.txtStatus = mybucketlist.get(position).cStatus
+        holder.advId = AdvID
     }
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
@@ -42,6 +43,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
         var txtPrice : Double = 0.00
         var txtPoints : Int = 0
         var txtStatus : Boolean = false
+        var advId : Int = -1
         init {
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, ViewChallengeActivity::class.java)
@@ -52,6 +54,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>) : Rec
                 intent.putExtra("Points", txtPoints)
                 intent.putExtra("Price", txtPrice)
                 intent.putExtra("Status", txtStatus)
+                intent.putExtra("advID", advId)
                 itemView.context.startActivity(intent)
             }
         }

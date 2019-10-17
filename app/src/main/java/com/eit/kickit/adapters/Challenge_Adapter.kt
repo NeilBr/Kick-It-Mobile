@@ -24,7 +24,7 @@ class Challenge_Adapter(private val challenges: ArrayList<Challenge>, private va
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.lblName.text = challenges.get(position).cName
-        holder.lblDescr.text = challenges.get(position).cDescription
+        holder.lblDescr.text = challenges.get(position).cPoints.toString()
         holder.txtCID = challenges.get(position).cID
         holder.txtName = challenges.get(position).cName
         holder.txtDescr = challenges.get(position).cDescription

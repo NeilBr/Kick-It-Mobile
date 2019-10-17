@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.eit.kickit.ChallengesListActivity
 import com.eit.kickit.R
@@ -15,8 +16,7 @@ import com.eit.kickit.models.BucketList
 /**
  * This adapter is for the bucketlists to bind to the layout in bucket list tab
  */
-class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>, private val advID : Int): RecyclerView.Adapter<BucketLists_Adapter.ViewHolder>() {
-
+class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>, private val advID : Int, private val point: Double): RecyclerView.Adapter<BucketLists_Adapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view : View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_item, parent, false)
@@ -32,7 +32,10 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>, privat
         holder.lblReqPnts.text = bucketlists.get(position).blReqPoints.toString()
         holder.blId = bucketlists.get(position).blID
         holder.curName = bucketlists.get(position).blName
+        holder.curDesc = bucketlists.get(position).blDescription
+        holder.reqPoints = bucketlists.get(position).blReqPoints
         holder.advID = advID
+        holder.points = point
     }
 
 
@@ -41,18 +44,29 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>, privat
         val lblName : TextView = itemView.findViewById(R.id.titleText)
         val lblReqPnts : TextView = itemView.findViewById(R.id.normalText)
         var blId : Int = 0
+        var reqPoints : Int = - 1
         var curName : String = ""
+        var curDesc : String = ""
         var advID : Int = -1
+        var points : Double = 0.0
         init{
             itemView.setOnClickListener {
                // var data:MutableList<BucketList> = ArrayList<BucketList>()
                // data = bucketLists
-                val intent = Intent(itemView.context, ChallengesListActivity::class.java)
-               // intent.putParcelableArrayListExtra("BucketLists", data as java.util.ArrayList<out Parcelable>)
-                intent.putExtra("ID", blId)
-                intent.putExtra("Name", curName)
-                intent.putExtra("advID", advID)
-                itemView.context.startActivity(intent)
+                if (points >= reqPoints)
+                {
+                    val intent = Intent(itemView.context, ChallengesListActivity::class.java)
+                    intent.putExtra("ID", blId)
+                    intent.putExtra("Name", curName)
+                    intent.putExtra("Desc", curDesc)
+                    intent.putExtra("reqPoints", reqPoints)
+                    intent.putExtra("advID", advID)
+                    itemView.context.startActivity(intent)
+                }
+                else
+                {
+                    Toast.makeText(itemView.context, "Not enough points to unlock!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

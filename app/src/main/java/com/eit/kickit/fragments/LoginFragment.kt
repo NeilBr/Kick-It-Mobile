@@ -96,7 +96,9 @@ class LoginFragment : Fragment() {
                     resultSet.getString("adv_telephone"),
                     resultSet.getDouble("adv_totalPoints"),
                     true,
-                    resultSet.getBoolean("adv_admin")
+                    resultSet.getBoolean("adv_admin"),
+                    resultSet.getDouble("adv_TotalSpent"),
+                    resultSet.getInt("adv_GoldenBootCount")
                 )
                 MainActivity.adventurer?.setID(resultSet.getInt("adv_id"))
                 MainActivity.adventurer?.setPicLink(resultSet.getString("adv_profilepic"))

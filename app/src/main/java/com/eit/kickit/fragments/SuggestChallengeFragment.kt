@@ -68,7 +68,7 @@ class SuggestChallengeFragment : Fragment(){
         }
 
         spinBucket?.onItemSelectedListener
-        spinBucket!!.adapter = ArrayAdapter(activity!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, bucketlists)
+        spinBucket!!.adapter = ArrayAdapter(activity!!.applicationContext, R.layout.spin_item, bucketlists)
         spinBucket?.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }

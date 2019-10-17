@@ -103,6 +103,6 @@ class MyBucketListFragment : Fragment() {
     private fun setAdapters()
     {
         rvMyBucketList.layoutManager = LinearLayoutManager(activity)
-        rvMyBucketList.adapter = MyBucketList_Adapter(myChallenges)
+        rvMyBucketList.adapter = MyBucketList_Adapter(myChallenges, advID)
     }
 }

@@ -10,7 +10,9 @@ data class Adventurer (
     var advTelephone: String,
     var advPoints: Double,
     var advActive: Boolean,
-    var advAdmin: Boolean) : Serializable
+    var advAdmin: Boolean,
+    var advTotalSpent: Double,
+    var advGoldenBootCount: Int) : Serializable
 {
     private var avdID: Int = 0
     private var advPicLink = ""

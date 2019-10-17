@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="com.eit.kickit">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.eit.kickit">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -10,11 +11,14 @@
 
     <application
             android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@mipmap/kick_it_icon"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/kick_it_icon_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
+            android:theme="@style/AppTheme"
+            tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".InviteComradeActivity">
+        </activity>
         <activity
                 android:name=".CreateProfileActivity"
                 android:parentActivityName=".MainActivity">
@@ -29,13 +33,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity android:name=".ChallengesListActivity"/>
-
         <activity android:name=".ViewChallengeActivity"/>
-
         <activity android:name=".ViewProfileActivity"/>
-
     </application>
 
 </manifest>

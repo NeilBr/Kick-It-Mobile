@@ -2,6 +2,7 @@ package com.eit.kickit.adapters
 
 import android.app.DownloadManager
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -123,6 +124,11 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
             verify_post.setOnClickListener(this::verify)
             feedback_post.setOnClickListener(this::feedback)
 
+            if (post.post_status)
+            {
+                verify_post.isClickable = false
+                verify_post.setTextColor(Color.GRAY)
+            }
         }
 
         private fun loadComments(results: Any){
@@ -165,8 +171,11 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
 
         fun verify(view: View){
 
-            Toast.makeText(itemView.context, "Verify Post", Toast.LENGTH_SHORT).show()
-
+            val query = "UPDATE posts SET p_status = 1 WHERE p_id = ${post.post_id}"
+            Database().runQuery(query, false)
+            {
+                Toast.makeText(itemView.context, "${post.post_caption} has been verified", Toast.LENGTH_SHORT).show()
+            }
         }
 
         fun feedback(view: View){
