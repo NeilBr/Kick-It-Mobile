@@ -23,7 +23,6 @@ class ViewChallengeActivity : AppCompatActivity() {
     private var cStatus : Boolean = false
     private var blID : Int = -1
     private var advID : Int = -1
-    private var blcID : Int = 0
     private val comradeID : ArrayList<Int> = ArrayList()
     private val comradeNames : ArrayList<String> = ArrayList()
 
@@ -61,17 +60,6 @@ class ViewChallengeActivity : AppCompatActivity() {
         txtPointsMy.setText("${cPoints}")
         txtPriceMy.setText("${cPrice}")
         progressBarViewMyChallenges.visibility = View.VISIBLE
-
-        //Select all friends name and surnames -> for recyclerView
-        //Find all friends
-
-        //select concat(adv_firstName, ' ', adv_surname) AS Name
-        //from adventurers
-        //
-        //select adv_id2
-        //FROM challenge_invites
-        //WHERE adv_id1 = 6
-        //AND c_id = 2
 
         val query = "SELECT adv_id2 FROM challenge_invites WHERE adv_id1 = $advID AND c_id = $cID"
         Database().runQuery(query, true)
@@ -126,28 +114,67 @@ class ViewChallengeActivity : AppCompatActivity() {
 
     fun onAddClick(view : View)
     {
+        //Check if challenge is already added
         progressBarViewChallenges.visibility = View.VISIBLE
-        val query = "SELECT * FROM bucketlist_challenges"
+        val query = "SELECT * FROM bucketlist_challenges WHERE adv_id = $advID"
         Database().runQuery(query, true)
         {
-                result -> setBlcID(result)
+            result -> checkIfAdded(result)
         }
     }
 
-    private fun setBlcID(result: Any)
+    private fun checkIfAdded(result : Any)
     {
+        var found = false
         val resultSet : ResultSet = result as ResultSet
-
         while (resultSet.next())
         {
-            blcID++
+            val curCID = resultSet.getInt("c_id")
+            if (curCID == cID)
+            {
+                found = true
+            }
         }
-        blcID++
-
-        val query = "INSERT INTO bucketlist_challenges VALUES($blcID, -1, $cID, $advID)"
-        Database().runQuery(query, false)
+        if (found)
         {
-                result -> postChallenge(result)
+            Toast.makeText(this, "Challenge already added to MyBucketList", Toast.LENGTH_SHORT).show()
+            progressBarViewChallenges.visibility = View.INVISIBLE
+        }
+        else if (!found)
+        {
+            //Check if already completed
+            val query = "SELECT * FROM adv_challenges_completed WHERE adv_id = $advID"
+            Database().runQuery(query, true)
+            {
+                result -> checkIfCompleted(result)
+            }
+        }
+    }
+
+    private fun checkIfCompleted(result : Any)
+    {
+        var completed = false
+        val resultSet : ResultSet = result as ResultSet
+        while (resultSet.next())
+        {
+            val curCID = resultSet.getInt("c_id")
+            if (curCID == cID)
+            {
+                completed = true
+            }
+        }
+        if (completed)
+        {
+            Toast.makeText(this, "Challenge already been completed", Toast.LENGTH_SHORT).show()
+            progressBarViewChallenges.visibility = View.INVISIBLE
+        }
+        else if (!completed)
+        {
+            val query = "INSERT INTO bucketlist_challenges(bl_id, c_id, adv_id) VALUES(-1, $cID, $advID)"
+            Database().runQuery(query, false)
+            {
+                    result -> postChallenge(result)
+            }
         }
     }
 
@@ -167,13 +194,27 @@ class ViewChallengeActivity : AppCompatActivity() {
 
     fun onRemoveClick(view : View)
     {
-       // val query = "DELETE FROM my_bucketlist WHERE c_id = $cID"
-        val query = "DELETE FROM bucketlist_challenges WHERE c_id = $cID"
+        //Delete the correct challenge -> get blc_id
         progressBarViewMyChallenges.visibility = View.VISIBLE
-
-        Database().runQuery(query, false)
+        val query = "Select blc_id FROM bucketlist_challenges WHERE c_id = $cID AND adv_id = $advID"
+        Database().runQuery(query, true)
         {
-            result -> removeChallenge(result)
+            result -> getBLCID(result)
+        }
+    }
+
+    private fun getBLCID(result : Any)
+    {
+       val resultSet : ResultSet = result as ResultSet
+
+        if (resultSet.next())
+        {
+            val blcID = resultSet.getInt("blc_id")
+            val query = "DELETE FROM bucketlist_challenges WHERE c_id = $cID AND blc_id = $blcID"
+            Database().runQuery(query, false)
+            {
+                    result -> removeChallenge(result)
+            }
         }
     }
 
@@ -196,6 +237,14 @@ class ViewChallengeActivity : AppCompatActivity() {
         val intent : Intent =  Intent(this, InviteComradeActivity::class.java)
         intent.putExtra("advID", advID)
         startActivity(intent)
+    }
+
+    fun onCompleteClick(view : View)
+    {
+        //When a challenge is completed ->  Complete the post
+        //                                  In my bucketlist <- remove
+
+        Toast.makeText(this, "Code here", Toast.LENGTH_SHORT).show()
     }
 
 }
