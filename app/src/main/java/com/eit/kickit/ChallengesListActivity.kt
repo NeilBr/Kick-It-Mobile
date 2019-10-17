@@ -16,6 +16,8 @@ class ChallengesListActivity : AppCompatActivity() {
   //  private var bucketlists : ArrayList<BucketList> = ArrayList()
     private var blID : Int = -1
     private var blName : String = ""
+    private var blDesc : String = ""
+    private var blReqP : Int = -1
     private val temp : ArrayList<Challenge> = ArrayList()
     private val curChallenges : ArrayList<Challenge> = ArrayList()
     private var advID : Int = -1
@@ -28,7 +30,10 @@ class ChallengesListActivity : AppCompatActivity() {
       //  bucketlists = getIntent().getParcelableArrayListExtra("BucketLists");
         blID = getIntent().getIntExtra("ID", 0)
         blName = getIntent().getStringExtra("Name")
+        blDesc = getIntent().getStringExtra("Desc")
+        blReqP = getIntent().getIntExtra("reqPoints", -1)
         advID = getIntent().getIntExtra("advID", -1)
+
 /*
         val c1 = Challenge(1, "Walk 5km", "Take a stroll", 1, 0.00, false, 0)
         val c2 = Challenge(2, "Waltz backwards", "Dance tings innit", 50, 0.00, false, 1)
@@ -40,6 +45,8 @@ class ChallengesListActivity : AppCompatActivity() {
         val c8 = Challenge(8, "Ignore Assignments", "Just accept the laziness", 275, 0.00, false, 5)
 */
         lbl_curBL.setText(blName)
+        lbl_Description.setText(blDesc)
+        lbl_reqPoints.setText("$blReqP")
         loadChallenges()
     }
 

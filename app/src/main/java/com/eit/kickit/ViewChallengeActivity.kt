@@ -1,10 +1,13 @@
 package com.eit.kickit
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.eit.kickit.common.FileHandler
 import com.eit.kickit.database.Database
 import kotlinx.android.synthetic.main.activity_view_challenge.*
 import kotlinx.android.synthetic.main.activity_view_my_challenge.*
@@ -21,6 +24,8 @@ class ViewChallengeActivity : AppCompatActivity() {
     private var blID : Int = -1
     private var advID : Int = -1
     private var blcID : Int = 0
+    private val comradeID : ArrayList<Int> = ArrayList()
+    private val comradeNames : ArrayList<String> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +40,7 @@ class ViewChallengeActivity : AppCompatActivity() {
         cStatus = getIntent().getBooleanExtra("Status", false)
         blID = getIntent().getIntExtra("blID", -1)
         advID = getIntent().getIntExtra("advID", -1)
+
 
         if (layoutV.equals("View my challenge layout"))
         {
@@ -54,6 +60,60 @@ class ViewChallengeActivity : AppCompatActivity() {
         txtDescrMy.setText(cDesc)
         txtPointsMy.setText("${cPoints}")
         txtPriceMy.setText("${cPrice}")
+        progressBarViewMyChallenges.visibility = View.VISIBLE
+
+        //Select all friends name and surnames -> for recyclerView
+        //Find all friends
+
+        //select concat(adv_firstName, ' ', adv_surname) AS Name
+        //from adventurers
+        //
+        //select adv_id2
+        //FROM challenge_invites
+        //WHERE adv_id1 = 6
+        //AND c_id = 2
+
+        val query = "SELECT adv_id2 FROM challenge_invites WHERE adv_id1 = $advID AND c_id = $cID"
+        Database().runQuery(query, true)
+        {
+            result -> getComradeIDs(result)
+        }
+
+
+    }
+
+    private fun getComradeIDs(result : Any)
+    {
+        val resultSet : ResultSet = result as ResultSet
+
+        while (resultSet.next())
+        {
+            comradeID.add(resultSet.getInt("adv_id2"))
+        }
+
+        for (x in comradeID)
+        {
+            progressBarViewMyChallenges.visibility = View.VISIBLE
+            val query = "SELECT concat(adv_firstName, ' ', adv_surname) AS Name FROM adventurers WHERE adv_id = $x"
+            Database().runQuery(query, true)
+            {
+                    result -> getComradeNames(result)
+            }
+        }
+
+    }
+
+    private fun getComradeNames(result: Any)
+    {
+        val resultSet : ResultSet = result as ResultSet
+
+        while (resultSet.next())
+        {
+            comradeNames.add(resultSet.getString("Name"))
+        }
+        listComrades.adapter = ArrayAdapter(this, R.layout.spin_item, comradeNames)
+        progressBarViewMyChallenges.visibility = View.INVISIBLE
+
     }
 
     private fun loadChallengeView()
@@ -131,5 +191,11 @@ class ViewChallengeActivity : AppCompatActivity() {
         }
     }
 
+    fun onInviteClick(view : View)
+    {
+        val intent : Intent =  Intent(this, InviteComradeActivity::class.java)
+        intent.putExtra("advID", advID)
+        startActivity(intent)
+    }
 
 }

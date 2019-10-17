@@ -5,15 +5,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <Button
-            android:text="@string/button_remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnRemoveFromMyBL" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_bias="0.973" app:layout_constraintVertical_bias="0.988"
-            android:onClick="onRemoveClick"/>
+            android:id="@+id/btnRemoveFromMyBL"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp" android:onClick="onRemoveClick"
+            android:text="@string/button_remove" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+    />
     <TextView
             android:text="Challenge name here"
             android:layout_width="wrap_content"
@@ -73,4 +72,37 @@
             android:layout_marginTop="16dp" android:indeterminate="true"
             android:visibility="invisible"
             app:layout_constraintTop_toBottomOf="@+id/txtPriceMy" tools:layout_editor_absoluteX="0dp"/>
+    <Button
+            android:id="@+id/btnCompleteChallenge"
+            android:layout_width="120dp"
+            android:layout_height="60dp" android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp" android:text="@string/button_complete"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+    <Button
+            android:id="@+id/btnInviteFriend"
+            android:layout_width="110dp"
+            android:layout_height="60dp" android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
+            android:onClick="onInviteClick"
+            android:text="@string/button_invite_comrad"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnCompleteChallenge" app:layout_constraintStart_toEndOf="@+id/btnRemoveFromMyBL"/>
+    <TextView
+            android:id="@+id/txtComradesInChallenge"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp" android:layout_marginEnd="8dp"
+            android:text="@string/label_comrades" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/progressBarViewMyChallenges"/>
+
+    <ListView
+            android:id="@+id/listComrades"
+            android:layout_width="0dp" android:layout_height="0dp"
+            android:layout_marginStart="8dp" android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnInviteFriend"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtComradesInChallenge"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

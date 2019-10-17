@@ -8,4 +8,5 @@
     <color name="gradientFrom">#6A407D</color>
     <color name="gradientTo">#D96883</color>
     <color name="gradientMid">#B858B3</color>
+    <color name="goldenBoot">#FFB300</color>
 </resources>
