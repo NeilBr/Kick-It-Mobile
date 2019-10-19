@@ -24,7 +24,6 @@ class SuggestChallengeFragment : Fragment(){
     private var scName : String = ""
     private var scDesc : String = ""
     private var scPoints : Int = 0
-    private var scPrice : Double = 0.00
     private var scStatus : Int = 0
     private var scBucket : String = ""
 
@@ -49,6 +48,7 @@ class SuggestChallengeFragment : Fragment(){
         txtPrice = view.findViewById(R.id.challengePrice)
         spinBucket = view.findViewById(R.id.bucketSpinner)
 
+        //Get all bucketlists
         val query = "SELECT * FROM bucketlists"
         Database().runQuery(query, true)
         {
@@ -84,41 +84,18 @@ class SuggestChallengeFragment : Fragment(){
 
     private fun suggestChallenge()
     {
-        val query = "SELECT * FROM challenges"
-
-        Database().runQuery(query, true)
-        {
-            result -> findLastSuggestion(result)
-        }
-
-    }
-
-    private fun findLastSuggestion(result : Any)
-    {
-        val resultSet: ResultSet = result as ResultSet
-
-        while (resultSet.next())
-        {
-            scID++
-        }
-        scID++
         progressBarSuggest.visibility = View.VISIBLE
-        postSuggestion()
-    }
 
-    private fun postSuggestion()
-    {
         scName = txtName!!.text.toString()
         scDesc = txtDesc!!.text.toString()
         scPoints = Integer.parseInt(txtPoints!!.text.toString())
         scStatus = 0
-        //scPrice =
-
-        val query = "INSERT INTO challenges VALUES($scID,'$scName','$scDesc',$scPoints,$scPrice,$scStatus)"
+        val scPrice = txtPrice!!.text
+        val query = "INSERT INTO suggested_challenges(sc_name, sc_description, sc_points, sc_price, sc_bucketlist, sc_status) VALUES('$scName','$scDesc',$scPoints,$scPrice, '$scBucket', $scStatus)"
 
         Database().runQuery(query, false)
         {
-            result -> sendSuggestion(result)
+                result -> sendSuggestion(result)
         }
     }
 

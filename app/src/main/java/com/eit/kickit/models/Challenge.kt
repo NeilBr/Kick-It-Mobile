@@ -10,7 +10,7 @@ data class Challenge(
     var cID : Int,
     var cName : String,
     var cDescription : String,
-    var cPoints : Int,
+    var cPoints : Double,
     var cPrice : Double,
     var cStatus : Boolean
 )
@@ -20,7 +20,7 @@ data class Challenge(
         parcel.readInt(),
         parcel.readString().toString(),
         parcel.readString().toString(),
-        parcel.readInt(),
+        parcel.readDouble(),
         parcel.readDouble(),
         parcel.readByte() != 0.toByte()
     )
@@ -30,7 +30,7 @@ data class Challenge(
         parcel.writeInt(cID)
         parcel.writeString(cName)
         parcel.writeString(cDescription)
-        parcel.writeInt(cPoints)
+        parcel.writeDouble(cPoints)
         parcel.writeDouble(cPrice)
         parcel.writeByte(if (cStatus) 1 else 0)
     }

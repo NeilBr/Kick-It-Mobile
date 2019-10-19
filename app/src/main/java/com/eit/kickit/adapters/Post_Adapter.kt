@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.eit.kickit.MainActivity
 import com.eit.kickit.R
 import com.eit.kickit.common.FileHandler
 import com.eit.kickit.common.S3LINK
@@ -173,14 +174,39 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
 
             val query = "UPDATE posts SET p_status = 1 WHERE p_id = ${post.post_id}"
             Database().runQuery(query, false)
-            {
-                Toast.makeText(itemView.context, "${post.post_caption} has been verified", Toast.LENGTH_SHORT).show()
+            {result ->
+                if (result is String)
+                {
+                    Toast.makeText(itemView.context, "$result", Toast.LENGTH_SHORT).show()
+                }
+                else
+                {
+                    Toast.makeText(itemView.context, "${post.post_caption} has been verified", Toast.LENGTH_SHORT).show()
+                }
+                verify_post.isClickable = false
             }
         }
 
         fun feedback(view: View){
 
-            Toast.makeText(itemView.context, "Add Feedback", Toast.LENGTH_SHORT).show()
+            val comment : String = feedback_text.getText().toString()
+            if (comment.isEmpty())
+            {
+                Toast.makeText(itemView.context, "Please type in your feedback!", Toast.LENGTH_SHORT).show()
+            }
+            else
+            {
+                val advId = MainActivity.adventurer!!.getID()
+                val query = "INSERT INTO post_comments(p_id, adv_id, com_text) VALUES(${post.post_id}, $advId, '$comment')"
+                Database().runQuery(query, false)
+                { result ->
+                    if(result is String)
+                        Toast.makeText(itemView.context, result, Toast.LENGTH_SHORT).show()
+                    else
+                        Toast.makeText(itemView.context, "Feedback sent!", Toast.LENGTH_SHORT).show()
+
+                }
+            }
 
         }
 

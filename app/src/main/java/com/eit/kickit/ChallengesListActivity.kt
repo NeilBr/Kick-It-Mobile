@@ -76,7 +76,7 @@ class ChallengesListActivity : AppCompatActivity() {
                 resultSet.getInt("c_id"),
                 resultSet.getString("c_name"),
                 resultSet.getString("c_description"),
-                resultSet.getInt("c_points"),
+                resultSet.getDouble("c_points"),
                 resultSet.getDouble("c_price"),
                 status
             )

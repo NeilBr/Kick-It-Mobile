@@ -24,7 +24,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>, priva
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.blName.text = mybucketlist.get(position).cName
-        holder.blDescr.text = mybucketlist.get(position).cDescription
+        holder.blDescr.text = mybucketlist.get(position).cPoints.toString()
         holder.txtCID = mybucketlist.get(position).cID
         holder.txtName = mybucketlist.get(position).cName
         holder.txtDescr = mybucketlist.get(position).cDescription
@@ -41,7 +41,7 @@ class MyBucketList_Adapter(private val mybucketlist: ArrayList<Challenge>, priva
         var txtName : String = ""
         var txtDescr : String = ""
         var txtPrice : Double = 0.00
-        var txtPoints : Int = 0
+        var txtPoints : Double = 0.00
         var txtStatus : Boolean = false
         var advId : Int = -1
         init {
