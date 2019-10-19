@@ -1,14 +1,21 @@
 package com.eit.kickit
 
+import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import com.eit.kickit.common.FileHandler
 import com.eit.kickit.database.Database
+import kotlinx.android.synthetic.main.activity_create_profile.*
 import kotlinx.android.synthetic.main.activity_view_challenge.*
 import kotlinx.android.synthetic.main.activity_view_my_challenge.*
+import java.io.InputStream
 import java.sql.ResultSet
 
 class ViewChallengeActivity : AppCompatActivity() {
@@ -21,12 +28,16 @@ class ViewChallengeActivity : AppCompatActivity() {
     private var cStatus : Boolean = false
     private var blID : Int = -1
     private var advID : Int = -1
+    private var advName : String = ""
+    private var advSurname : String = ""
     private var blcID : Int = 0
     private val comradeNames : ArrayList<String> = ArrayList()
-
+    private var uri: Uri? = Uri.EMPTY
+    lateinit var pic: InputStream
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         val layoutV = getIntent().getStringExtra("MyChallenge")
         cID = getIntent().getIntExtra("cID", 0)
@@ -37,7 +48,8 @@ class ViewChallengeActivity : AppCompatActivity() {
         cStatus = getIntent().getBooleanExtra("Status", false)
         blID = getIntent().getIntExtra("blID", -1)
         advID = getIntent().getIntExtra("advID", -1)
-
+        advName = MainActivity.adventurer!!.advFirstName
+        advSurname = MainActivity.adventurer!!.advSurname
 
         if (layoutV.equals("View my challenge layout"))
         {
@@ -49,6 +61,7 @@ class ViewChallengeActivity : AppCompatActivity() {
             setContentView(R.layout.activity_view_challenge)
             loadChallengeView()
         }
+
     }
 
     private fun loadMyChallengeView()
@@ -205,7 +218,8 @@ class ViewChallengeActivity : AppCompatActivity() {
 
     private fun getBLCID(result : Any)
     {
-       val resultSet : ResultSet = result as ResultSet
+        progressBarViewMyChallenges.visibility = View.VISIBLE
+        val resultSet : ResultSet = result as ResultSet
 
         if (resultSet.next())
         {
@@ -242,9 +256,6 @@ class ViewChallengeActivity : AppCompatActivity() {
 
     fun onCompleteClick(view : View)
     {
-        //When a challenge is completed ->  Complete the post
-        //                                  In my bucketlist <- remove
-
         //Remove the challenge
         progressBarViewMyChallenges.visibility = View.VISIBLE
         val query = "Select blc_id FROM bucketlist_challenges WHERE c_id = $cID AND adv_id = $advID"
@@ -276,18 +287,23 @@ class ViewChallengeActivity : AppCompatActivity() {
         {
             result -> updateProfile(result)
         }
+
+        //Post to S3
+        //Add to post table
+        selectPicture()
     }
 
     private fun updateProfile(result: Any)
     {
         if (result is ResultSet)
         {
+            progressBarViewMyChallenges.visibility = View.VISIBLE
             if (result.next())
             {
                 val advTP = result.getDouble("adv_totalPoints") + cPoints
                 val advTS = result.getDouble("adv_TotalSpent") + cPrice
-                val qeury = "UPDATE adventurers SET adv_totalPoints = $advTP, adv_TotalSpent = $advTS WHERE adv_id = $advID"
-                Database().runQuery(qeury, false)
+                val query = "UPDATE adventurers SET adv_totalPoints = $advTP, adv_TotalSpent = $advTS WHERE adv_id = $advID"
+                Database().runQuery(query, false)
                 {
                     result ->
                     if (result is String)
@@ -298,6 +314,38 @@ class ViewChallengeActivity : AppCompatActivity() {
                     {
                         Toast.makeText(this, "Points and total spent has been updated", Toast.LENGTH_SHORT).show()
                     }
+                }
+            }
+        }
+    }
+
+    private fun selectPicture(){
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1000)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        progressBarViewMyChallenges.visibility = View.VISIBLE
+        if(resultCode == Activity.RESULT_OK && requestCode == 1000){
+            uri = data!!.data
+            val fileName = "$advID" + "_" + "$cID" + "_" + "$cName"
+            FileHandler(this).uploadFile(uri, fileName, false)
+
+            val caption = advName + " " + advSurname + ": " + cName
+            val query = "INSERT INTO posts(adv_id, p_caption, p_status, p_photoUrl, p_likes) VALUES ($advID, '$caption', 0, '$fileName', 0)"
+            Database().runQuery(query, false)
+            {
+                result ->
+                if (result is String)
+                {
+                    Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+                    progressBarViewMyChallenges.visibility = View.INVISIBLE
+                }
+                else
+                {
+                    Toast.makeText(this, "Post has been uploaded!", Toast.LENGTH_SHORT).show()
+                    progressBarViewMyChallenges.visibility = View.INVISIBLE
                 }
             }
         }
