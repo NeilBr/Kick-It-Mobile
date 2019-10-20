@@ -1,12 +1,14 @@
 package com.eit.kickit.adapters
 
 import android.app.DownloadManager
+import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
@@ -166,8 +168,44 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
 
         private fun report(view: View){
 
-            Toast.makeText(itemView.context, "Report Post", Toast.LENGTH_SHORT).show()
+            val alertDialog = AlertDialog.Builder(itemView.context)
+            alertDialog.setTitle("Report Post")
+            alertDialog.setMessage("Enter a reason for reporting:")
 
+            val input = EditText(itemView.context)
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+            input.layoutParams = lp
+            alertDialog.setView(input)
+
+            alertDialog.setPositiveButton(R.string.report) { dialog, _ ->
+
+                Toast.makeText(itemView.context, "Reporting Post!", Toast.LENGTH_SHORT).show()
+
+                val query = "INSERT INTO reports(adv_id,p_id,rep_reason) VALUES(${MainActivity.adventurer!!.getID()},${post.post_id},'${input.text}')"
+
+                Database().runQuery(query, false){ result ->
+
+                    if(result is Boolean){
+                        Toast.makeText(itemView.context, "Post Reported!", Toast.LENGTH_SHORT).show()
+                    } else{
+                        println(result)
+                        Toast.makeText(itemView.context, "Something went wrong!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                dialog.dismiss()
+
+            }
+
+            alertDialog.setNegativeButton(R.string.cancel){ dialog, _ ->
+
+                dialog.cancel()
+
+            }
+
+            alertDialog.show()
         }
 
         fun verify(view: View){

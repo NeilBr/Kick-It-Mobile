@@ -20,6 +20,7 @@ import com.eit.kickit.database.DatabaseConnection
 import com.eit.kickit.fragments.HomeFragment
 import com.eit.kickit.fragments.LoginFragment
 import com.eit.kickit.models.Adventurer
+import com.eit.kickit.models.ChallengeInvite
 import kotlinx.android.synthetic.main.activity_view_profile.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.splash_screen.*
@@ -35,6 +36,9 @@ class ViewProfileActivity : AppCompatActivity() {
     private var userID = 0
 
     private var displayType = -1
+
+    private var itemArray: ArrayList<String> = ArrayList()
+    private var inviteArray: ArrayList<ChallengeInvite> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,17 +77,136 @@ class ViewProfileActivity : AppCompatActivity() {
         viewFirstName.text = MainActivity.adventurer?.advFirstName
         viewSurname.text = MainActivity.adventurer?.advSurname
 
-        val query = "SELECT c.c_id, c.c_name, c.c_points " +
-                "FROM adv_challenges_completed AS a " +
-                "INNER JOIN challenges AS c ON a.c_id = c.c_id " +
-                "WHERE a.adv_id = $userID "
+        textView15.text = getString(R.string.invites)
+
+        val query = "SELECT CONCAT(a.adv_firstName, ' ', a.adv_surname) AS adv_name, c.c_name, ci_id, c.c_id " +
+                "FROM challenge_invites AS ci INNER JOIN adventurers AS a ON ci.adv_id1 = a.adv_id INNER JOIN challenges AS c ON ci.c_id = c.c_id " +
+                "WHERE ci.adv_id2 = $userID AND ci.ci_status = 0"
+
         Database().runQuery(query, true){
-            result -> loadCompletedChallenges(result)
+            result -> loadChallengeInvites(result)
         }
 
         val dr = RoundedBitmapDrawableFactory.create(resources, MainActivity.adventurer?.getPic())
         dr.isCircular = true
         profilePicture.setImageDrawable(dr)
+    }
+
+    private fun loadChallengeInvites(result: Any){
+
+        if(result is ResultSet){
+
+            itemArray = ArrayList()
+
+            while(result.next()){
+
+                val newInvite = ChallengeInvite(
+                    result.getInt("ci_id"),
+                    result.getInt("c_id"),
+                    result.getString("adv_name"),
+                    result.getString("c_name"))
+
+                inviteArray.add(newInvite)
+
+                val string = newInvite.adv_name + " invited you to: \t " + newInvite.c_name
+                itemArray.add(string)
+
+            }
+
+            val adapter = ArrayAdapter(this, R.layout.dummy_will_delete, itemArray)
+            completed_challenges.adapter = adapter
+
+            completed_challenges.setOnItemClickListener{ _, _, position, _ ->
+                acceptInvite(position)
+            }
+
+            completed_challenges.setOnItemLongClickListener { _, _, position, _ ->
+                declineInvite(position)
+                true
+            }
+
+
+            viewProfileBar.visibility = View.INVISIBLE
+
+        }
+
+    }
+
+    private fun declineInvite(position: Int){
+        Toast.makeText(this, "Declining Invite", Toast.LENGTH_SHORT).show()
+
+        val invite = inviteArray[position]
+
+        val query = "DELETE FROM challenge_invites " +
+                "WHERE ci_id = ${invite.id}"
+
+        Database().runQuery(query, false){
+            result ->
+                if(result is String){
+                    Toast.makeText(this, "Something Went Wrong!", Toast.LENGTH_SHORT).show()
+                    println(result)
+                }
+                else{
+                    val adapter = completed_challenges.adapter as ArrayAdapter<*>
+                    itemArray.removeAt(position)
+                    inviteArray.removeAt(position)
+                    adapter.notifyDataSetChanged()
+
+                    Toast.makeText(this, "Invite Declined!", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun acceptInvite(position: Int){
+
+        Toast.makeText(this, "Accepting Invite", Toast.LENGTH_SHORT).show()
+
+        val invite = inviteArray[position]
+        val query = "UPDATE challenge_invites " +
+                "SET `ci_status` = 1 " +
+                "WHERE ci_id = ${invite.id}"
+
+        Database().runQuery(query, false){
+
+            result ->
+                if(result is String){
+                    println(result)
+                    Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    val query1 = "SELECT adv_id FROM bucketlist_challenges WHERE c_id = ${inviteArray[position].c_id} AND adv_id = ${MainActivity.adventurer!!.getID()}"
+
+                    val adapter = completed_challenges.adapter as ArrayAdapter<*>
+                    itemArray.removeAt(position)
+                    inviteArray.removeAt(position)
+                    adapter.notifyDataSetChanged()
+
+                    Database().runQuery(query1, true){ result2 ->
+                        if(result2 is ResultSet){
+                            if(!(result2.next())){
+                                val query2 = "INSERT INTO bucketlist_challenges(bl_id,c_id,adv_id) VALUES(-1,${inviteArray[position].c_id},${MainActivity.adventurer!!.getID()})"
+                                Database().runQuery(query2, false){ result1  ->
+                                    if(result1 is String){
+                                        Toast.makeText(this, "Something went Wrong!", Toast.LENGTH_SHORT).show()
+                                        println(result1)
+                                    }
+                                }
+                            }
+                            else{
+                                Toast.makeText(this, "Uhhh", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                    Toast.makeText(this, "Invite Accepted!", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun addToBucketList(){
+
+
+
     }
 
     private fun loadFriend(friend: Adventurer){
@@ -151,7 +274,7 @@ class ViewProfileActivity : AppCompatActivity() {
     }
 
     private fun loadCompletedChallenges(result: Any){
-        val itemArray: ArrayList<String> = ArrayList()
+        itemArray = ArrayList()
 
         if(result is ResultSet){
 
