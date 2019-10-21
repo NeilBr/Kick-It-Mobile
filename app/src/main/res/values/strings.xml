@@ -51,6 +51,7 @@
     <string name="completed_challenged">Completed Challenges</string>
     <string name="name_placeholder">Name:</string>
     <string name="edit_profile">Edit</string>
+    <string name="invites">Challenge Invites: </string>
 
     <!--Args-->
 
