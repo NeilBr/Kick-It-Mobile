@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         var adventurer: Adventurer? = null
         lateinit var header: View
-        lateinit var posts: Any
+        var posts: Any? = null
     }
 
     lateinit var sharedPref: SharedPreferences
@@ -248,29 +248,54 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.nav_bucket_lists -> {
-                loadFragment(frag = BucketListFragment())
-                toolbar.title = "Home"
-                toolbar.title = "Bucket Lists"
+                if(adventurer == null){
+                    Toast.makeText(this, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    loadFragment(frag = BucketListFragment())
+                    toolbar.title = "Home"
+                    toolbar.title = "Bucket Lists"
+                }
             }
 
             R.id.nav_suggest_challenge -> {
-                loadFragment(frag = SuggestChallengeFragment())
-                toolbar.title = "Suggest Challenge"
+                if(adventurer == null){
+                    Toast.makeText(this, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    loadFragment(frag = SuggestChallengeFragment())
+                    toolbar.title = "Suggest Challenge"
+                }
             }
 
             R.id.nav_my_bucket_list -> {
-                loadFragment(frag = MyBucketListFragment())
-                toolbar.title = "My Bucketlist"
+                if(adventurer == null){
+                    Toast.makeText(this, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    loadFragment(frag = MyBucketListFragment())
+                    toolbar.title = "My Bucketlist"
+                }
             }
 
             R.id.nav_progress -> {
-                loadFragment(frag = ProgressFragment())
-                toolbar.title = "Progress"
+                if(adventurer == null){
+                    Toast.makeText(this, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    loadFragment(frag = ProgressFragment())
+                    toolbar.title = "Progress"
+                }
             }
 
             R.id.nav_comrades -> {
-                loadFragment(frag = ComradesFragment())
-                toolbar.title = "Comrades"
+                if(adventurer == null){
+                    Toast.makeText(this, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    loadFragment(frag = ComradesFragment())
+                    toolbar.title = "Comrades"
+                }
             }
 
 

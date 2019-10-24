@@ -171,87 +171,112 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
 
         private fun report(view: View){
 
-            val alertDialog = AlertDialog.Builder(itemView.context)
-            alertDialog.setTitle("Report Post")
-            alertDialog.setMessage("Enter a reason for reporting:")
+            if(MainActivity.adventurer == null){
+                Toast.makeText(itemView.context, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
+            }
+            else {
 
-            val input = EditText(itemView.context)
-            val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT)
-            input.layoutParams = lp
-            alertDialog.setView(input)
+                val alertDialog = AlertDialog.Builder(itemView.context)
+                alertDialog.setTitle("Report Post")
+                alertDialog.setMessage("Enter a reason for reporting:")
 
-            alertDialog.setPositiveButton(R.string.report) { dialog, _ ->
+                val input = EditText(itemView.context)
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+                input.layoutParams = lp
+                alertDialog.setView(input)
 
-                Toast.makeText(itemView.context, "Reporting Post!", Toast.LENGTH_SHORT).show()
+                alertDialog.setPositiveButton(R.string.report) { dialog, _ ->
 
-                val query = "INSERT INTO reports(adv_id,p_id,rep_reason) VALUES(${MainActivity.adventurer!!.getID()},${post.post_id},'${input.text}')"
+                    Toast.makeText(itemView.context, "Reporting Post!", Toast.LENGTH_SHORT).show()
 
-                Database().runQuery(query, false){ result ->
+                    val query =
+                        "INSERT INTO reports(adv_id,p_id,rep_reason) VALUES(${MainActivity.adventurer!!.getID()},${post.post_id},'${input.text}')"
 
-                    if(result is Boolean){
-                        Toast.makeText(itemView.context, "Post Reported!", Toast.LENGTH_SHORT).show()
-                    } else{
-                        println(result)
-                        Toast.makeText(itemView.context, "Something went wrong!", Toast.LENGTH_SHORT).show()
+                    Database().runQuery(query, false) { result ->
+
+                        if (result is Boolean) {
+                            Toast.makeText(itemView.context, "Post Reported!", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            println(result)
+                            Toast.makeText(
+                                itemView.context,
+                                "Something went wrong!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
+
+                    dialog.dismiss()
+
                 }
 
-                dialog.dismiss()
+                alertDialog.setNegativeButton(R.string.cancel) { dialog, _ ->
 
+                    dialog.cancel()
+
+                }
+
+                alertDialog.show()
             }
-
-            alertDialog.setNegativeButton(R.string.cancel){ dialog, _ ->
-
-                dialog.cancel()
-
-            }
-
-            alertDialog.show()
         }
 
         fun verify(view: View){
-
-            val query = "UPDATE posts SET p_status = 1 WHERE p_id = ${post.post_id}"
-            Database().runQuery(query, false)
-            {result ->
-                if (result is String)
-                {
-                    Toast.makeText(itemView.context, "$result", Toast.LENGTH_SHORT).show()
-                }
-                else
-                {
-                    Toast.makeText(itemView.context, "${post.post_caption} has been verified", Toast.LENGTH_SHORT).show()
-                }
-                verify_post.isClickable = false
+            if(MainActivity.adventurer == null){
+                Toast.makeText(itemView.context, "Please Login To Continue!", Toast.LENGTH_SHORT).show()
             }
-        }
+            else {
 
-        fun feedback(view: View){
-
-            val comment : String = feedback_text.getText().toString()
-            if (comment.isEmpty())
-            {
-                Toast.makeText(itemView.context, "Please type in your feedback!", Toast.LENGTH_SHORT).show()
-            }
-            else
-            {
-                val advId = MainActivity.adventurer!!.getID()
-                val query = "INSERT INTO post_comments(p_id, adv_id, com_text) VALUES(${post.post_id}, $advId, '$comment')"
+                val query = "UPDATE posts SET p_status = 1 WHERE p_id = ${post.post_id}"
                 Database().runQuery(query, false)
                 { result ->
-                    if(result is String)
-                        Toast.makeText(itemView.context, result, Toast.LENGTH_SHORT).show()
-                    else
-                        Toast.makeText(itemView.context, "Feedback sent!", Toast.LENGTH_SHORT).show()
-
+                    if (result is String) {
+                        Toast.makeText(itemView.context, "$result", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(
+                            itemView.context,
+                            "${post.post_caption} has been verified",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    verify_post.isClickable = false
                 }
             }
-
         }
 
+        fun feedback(view: View) {
+            if (MainActivity.adventurer == null) {
+                Toast.makeText(itemView.context, "Please Login To Continue!", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
 
+                val comment: String = feedback_text.getText().toString()
+                if (comment.isEmpty()) {
+                    Toast.makeText(
+                        itemView.context,
+                        "Please type in your feedback!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    val advId = MainActivity.adventurer!!.getID()
+                    val query =
+                        "INSERT INTO post_comments(p_id, adv_id, com_text) VALUES(${post.post_id}, $advId, '$comment')"
+                    Database().runQuery(query, false)
+                    { result ->
+                        if (result is String)
+                            Toast.makeText(itemView.context, result, Toast.LENGTH_SHORT).show()
+                        else
+                            Toast.makeText(
+                                itemView.context,
+                                "Feedback sent!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    }
+                }
+            }
+        }
     }
-
 }
