@@ -47,6 +47,8 @@ class ViewProfileActivity : AppCompatActivity() {
 
         displayType = intent.getIntExtra("display", -1)
 
+        btnEditProfile.isEnabled = false
+
         if(displayType == 0)
             loadDetails()
         else{
@@ -127,6 +129,7 @@ class ViewProfileActivity : AppCompatActivity() {
 
 
             viewProfileBar.visibility = View.INVISIBLE
+            btnEditProfile.isEnabled = true
 
         }
 
