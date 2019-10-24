@@ -7,16 +7,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.eit.kickit.MainActivity
 import com.eit.kickit.R
 import com.eit.kickit.adapters.Post_Adapter
 import com.eit.kickit.database.Database
 import com.eit.kickit.models.Post
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.sql.ResultSet
 
 class HomeFragment : Fragment() {
 
-    private val posts: ArrayList<Post> = ArrayList()
+    private var posts: ArrayList<Post> = ArrayList()
     private lateinit var post_adapter: Post_Adapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -28,11 +30,32 @@ class HomeFragment : Fragment() {
 
         homeLoadBar.visibility = View.VISIBLE
 
+        val reloadFab: FloatingActionButton = view.findViewById(R.id.fabReloadList)
+
+        reloadFab.setOnClickListener {
+            getPosts()
+        }
+
+        if(MainActivity.posts is ResultSet){
+            loadPosts(MainActivity.posts)
+        }
+        else{
+            println(MainActivity.posts)
+            getPosts()
+        }
+    }
+
+    private fun getPosts(){
+
+        post_adapter.clear_all()
+        posts = ArrayList()
+
+
         val query = "select p.p_id, a.adv_id, CONCAT(a.adv_firstName, ' ', a.adv_surname) as poster_name, p.p_caption, p.p_status, p.p_photoUrl, p.p_likes " +
-                "from posts as p inner join adventurers as a on p.adv_id = a.adv_id"
+                "from posts as p inner join adventurers as a on p.adv_id = a.adv_id ORDER BY p.p_id DESC"
 
         Database().runQuery(query, true){
-            result -> loadPosts(result)
+                result -> loadPosts(result)
         }
     }
 
@@ -72,6 +95,4 @@ class HomeFragment : Fragment() {
         homeLoadBar.visibility = View.INVISIBLE
 
     }
-
-
 }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferType
 import com.eit.kickit.MainActivity
 import com.eit.kickit.R
 import com.eit.kickit.common.FileHandler
@@ -53,6 +54,10 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
     fun add(post: Post){
         posts.add(post)
         notifyItemChanged(posts.size - 1)
+    }
+
+    fun clear_all(){
+        posts = ArrayList()
     }
 
 
@@ -98,8 +103,6 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
             val tempFile = File.createTempFile(fileName, ".jpg")
 
             val downloadObserver = transferUtil.download(S3LINK + fileName, tempFile)
-
-
 
             downloadObserver.setTransferListener(object : TransferListener {
 

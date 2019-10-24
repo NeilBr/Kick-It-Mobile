@@ -22,12 +22,14 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.eit.kickit.common.FileHandler
 import com.eit.kickit.common.S3LINK
+import com.eit.kickit.database.Database
 import com.eit.kickit.fragments.*
 import com.eit.kickit.models.Adventurer
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.splash_screen.*
 import java.io.File
+import java.sql.ResultSet
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -36,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         var adventurer: Adventurer? = null
         lateinit var header: View
-
+        lateinit var posts: Any
     }
 
     lateinit var sharedPref: SharedPreferences
@@ -51,33 +53,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         AWSMobileClient.getInstance().initialize(this).execute()
 
-        if (tempPref != "null"){
-            loadAdventurer(tempPref)
+        val query = "select p.p_id, a.adv_id, CONCAT(a.adv_firstName, ' ', a.adv_surname) as poster_name, p.p_caption, p.p_status, p.p_photoUrl, p.p_likes " +
+                "from posts as p inner join adventurers as a on p.adv_id = a.adv_id ORDER BY p.p_id DESC"
 
-            if(adventurer?.getPicLink() == " placeholder"){
-                loadMainView()
+        Database().runQuery(query, true){ result ->
 
-                val src = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
-                adventurer?.setPic(src)
+            posts = result
 
-                loadHeader()
+            if (tempPref != "null"){
+                loadAdventurer(tempPref)
 
-                Toast.makeText(this@MainActivity, "Welcome ${adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
-                loadFragment(frag = HomeFragment())
+                if(adventurer?.getPicLink() == "placeholder"){
+                    loadMainView()
+
+                    val src = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
+                    adventurer?.setPic(src)
+
+                    loadHeader()
+
+                    Toast.makeText(this@MainActivity, "Welcome ${adventurer?.advFirstName}!", Toast.LENGTH_SHORT).show()
+                    loadFragment(frag = HomeFragment())
+                }
+                else{
+                    loadData()
+                }
             }
             else{
-                loadData()
+                loadMainView()
+                val src = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
+                val dr = RoundedBitmapDrawableFactory.create(resources, src)
+                dr.isCircular = true
+
+                header.headerImage.setImageDrawable(dr)
+
+                loadFragment(frag = LoginFragment())
             }
-        }
-        else{
-            loadMainView()
-            val src = BitmapFactory.decodeResource(resources, R.drawable.placeholder_image)
-            val dr = RoundedBitmapDrawableFactory.create(resources, src)
-            dr.isCircular = true
 
-            header.headerImage.setImageDrawable(dr)
-
-            loadFragment(frag = LoginFragment())
         }
     }
 
@@ -103,6 +114,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun loadData(){
+
+        splashBar.isIndeterminate = false
 
         val fileName = adventurer?.getPicLink()
 
@@ -184,7 +197,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun loadAdventurer (advString: String?) {
         val props = advString?.split(',')
-//
+
         adventurer = Adventurer(props!![1], props[2], props[3], props[4],  props[5].toDouble(), true, props[6].toBoolean(), 0.0,0)
         adventurer?.setID(Integer.parseInt(props[0]))
         adventurer?.setPicLink(props[7])
