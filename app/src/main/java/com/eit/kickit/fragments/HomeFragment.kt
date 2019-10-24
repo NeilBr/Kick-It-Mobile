@@ -87,8 +87,9 @@ class HomeFragment : Fragment() {
                 )
 
                 post_adapter.add(post)
-
             }
+
+            (MainActivity.posts!! as ResultSet).beforeFirst()
 
         }
         else{
