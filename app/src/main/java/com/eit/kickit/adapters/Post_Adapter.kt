@@ -85,6 +85,8 @@ class Post_Adapter(private var posts: ArrayList<Post>) : RecyclerView.Adapter<Po
             poster.text = post.poster_name
             post_caption.text = post.post_caption
 
+            comments.clear()
+
             image_loading.visibility = View.VISIBLE
             loadingComments.visibility = View.VISIBLE
 
