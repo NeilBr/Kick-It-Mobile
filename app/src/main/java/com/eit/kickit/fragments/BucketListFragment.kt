@@ -26,14 +26,6 @@ class BucketListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        /*
-        var c1 = BucketList(0, "Beginner","The Starter List for any adveturer", 0)
-        var c2 = BucketList(1, "Intermediate", "For adventurers wanting a challenge", 500)
-        var c3 = BucketList(2, "Student", "Just Student struggles", 750)
-        var c4 = BucketList(3, "Exotic", "For those who want a taste of strange", 1000)
-        var c5 = BucketList(4, "Fitness" ,"Let's hit that swol grind", 250)
-        var c6 = BucketList(5, "Lazy", "For the more relaxed", 120)
-*/
         advID = arguments!!.getInt("advID")
         progressBarBucketList.visibility = View.VISIBLE
         val query = "SELECT adv_totalPoints FROM adventurers WHERE adv_id = $advID"

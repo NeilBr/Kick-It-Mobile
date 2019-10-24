@@ -85,13 +85,13 @@ class SuggestChallengeFragment : Fragment(){
     private fun suggestChallenge()
     {
         progressBarSuggest.visibility = View.VISIBLE
-
         scName = txtName!!.text.toString()
         scDesc = txtDesc!!.text.toString()
         scPoints = Integer.parseInt(txtPoints!!.text.toString())
         scStatus = 0
         val scPrice = txtPrice!!.text
-        val query = "INSERT INTO suggested_challenges(sc_name, sc_description, sc_points, sc_price, sc_bucketlist, sc_status) VALUES('$scName','$scDesc',$scPoints,$scPrice, '$scBucket', $scStatus)"
+
+        val query = "INSERT INTO challenges(c_name, c_description, c_points, c_price, c_status) VALUES('$scName','$scDesc',$scPoints,$scPrice, $scStatus)"
 
         Database().runQuery(query, false)
         {
@@ -99,11 +99,59 @@ class SuggestChallengeFragment : Fragment(){
         }
     }
 
-    private fun sendSuggestion(result : Any)
+    private fun sendSuggestion(result1 : Any)
+    {
+        if (result1 is String)
+        {
+            Toast.makeText(this@SuggestChallengeFragment.context,result1, Toast.LENGTH_LONG).show()
+        }
+        else
+        {
+            val query = "SELECT bl_id FROM bucketlists WHERE bl_name = '$scBucket'"
+            Database().runQuery(query, true)
+            {
+                    result -> getBLID(result)
+            }
+        }
+    }
+
+    private fun getBLID(result1: Any)
+    {
+        val resultSet : ResultSet = result1 as ResultSet
+
+        if (resultSet.next())
+        {
+            val blID = resultSet.getInt("bl_id")
+
+            val query = "SELECT c_id from challenges WHERE c_name = '$scName' AND c_description = '$scDesc'"
+            Database().runQuery(query, true)
+            {
+                    result -> postToBLC(result, blID)
+            }
+
+        }
+    }
+
+    private fun postToBLC(result1: Any, bl_id : Int)
+    {
+        val resultSet : ResultSet = result1 as ResultSet
+
+        if (resultSet.next())
+        {
+            val cID = resultSet.getInt("c_id")
+            val query = "INSERT INTO bucketlist_challenges(c_id, bl_id, adv_id) VALUES($cID, $bl_id, 0)"
+            Database().runQuery(query, false)
+            {
+                    result -> postMessage(result)
+            }
+        }
+    }
+
+    private fun postMessage(result: Any)
     {
         if (result is String)
         {
-            Toast.makeText(this@SuggestChallengeFragment.context,result, Toast.LENGTH_LONG).show()
+            Toast.makeText(this@SuggestChallengeFragment.context, result, Toast.LENGTH_LONG).show()
         }
         else
         {
