@@ -51,8 +51,6 @@ class BucketLists_Adapter(private val bucketlists: ArrayList<BucketList>, privat
         var points : Double = 0.0
         init{
             itemView.setOnClickListener {
-               // var data:MutableList<BucketList> = ArrayList<BucketList>()
-               // data = bucketLists
                 if (points >= reqPoints)
                 {
                     val intent = Intent(itemView.context, ChallengesListActivity::class.java)
