@@ -89,9 +89,12 @@ class SuggestChallengeFragment : Fragment(){
         scDesc = txtDesc!!.text.toString()
         scPoints = Integer.parseInt(txtPoints!!.text.toString())
         scStatus = 0
-        val scPrice = txtPrice!!.text
+        var scPrice = txtPrice!!.text.toString()
 
-        val query = "INSERT INTO challenges(c_name, c_description, c_points, c_price, c_status) VALUES('$scName','$scDesc',$scPoints,$scPrice, $scStatus)"
+        if(scPrice == "")
+            scPrice = "0"
+
+        val query = "INSERT INTO challenges(c_name, c_description, c_points, c_price, c_status) VALUES('$scName','$scDesc',$scPoints,$scPrice,$scStatus)"
 
         Database().runQuery(query, false)
         {
