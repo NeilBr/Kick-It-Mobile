@@ -166,10 +166,15 @@ class ViewChallengeActivity : AppCompatActivity() {
         }
         else if (!completed)
         {
-            val query = "SELECT * FROM bucketlist_challenges"
-            Database().runQuery(query, true)
-            {
-                result -> setBlcID(result)
+//            val query = "SELECT * FROM bucketlist_challenges"
+//            Database().runQuery(query, true)
+//            {
+//                result -> setBlcID(result)
+//            }
+
+            val query = "INSERT INTO bucketlist_challenges(bl_id, c_id, adv_id) VALUES(-1, $cID, $advID)"
+            Database().runQuery(query, false){ insert ->
+                postChallenge(insert);
             }
         }
     }

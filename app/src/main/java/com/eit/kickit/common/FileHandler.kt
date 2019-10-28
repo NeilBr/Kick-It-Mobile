@@ -14,6 +14,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.util.IOUtils
 import com.eit.kickit.MainActivity
 import com.eit.kickit.R
@@ -62,7 +63,7 @@ class FileHandler(_context: Context){
         outputStream.close()
 
 
-        val uploadObserver = transferUtility.upload(S3LINK + fileName, file)
+        val uploadObserver = transferUtility.upload(S3LINK + fileName, file, CannedAccessControlList.PublicReadWrite)
 
 
         uploadObserver.setTransferListener(object : TransferListener {
